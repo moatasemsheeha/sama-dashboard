@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAMA Winchester College | Dashboard</title>
+  <style>
+    :root{--blue:#1d4ed8;--blue2:#2563eb;--yellow:#facc15;--yellow2:#eab308;--dark:#0f172a;--muted:#64748b;--bg:#f4f7fb;--card:#fff;--border:#e2e8f0;--green:#10b981;--red:#ef4444;--amber:#f59e0b;--purple:#8b5cf6;--shadow:0 16px 40px rgba(15,23,42,.10);--radius:22px;}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:linear-gradient(135deg,#f8fafc,#eef4ff);color:var(--dark);overflow-x:hidden}
+
+    /* ── Layout ── */
+    .app{display:grid;grid-template-columns:275px 1fr;min-height:100vh;transition:grid-template-columns .32s cubic-bezier(.4,0,.2,1)}
+    .app.collapsed{grid-template-columns:72px 1fr}
+
+    /* ── Sidebar ── */
+    aside{display:flex;flex-direction:column;background:linear-gradient(180deg,#07111f,#111827);color:#fff;padding:22px 16px;position:sticky;top:0;height:100vh;overflow-y:auto;overflow-x:hidden;transition:padding .32s cubic-bezier(.4,0,.2,1)}
+    .app.collapsed aside{padding:22px 10px}
+
+    .brand{display:flex;gap:12px;align-items:center;margin-bottom:28px;min-width:0}
+    .logo{width:46px;height:46px;border-radius:15px;flex-shrink:0;background:linear-gradient(135deg,var(--blue),var(--yellow));display:grid;place-items:center;font-weight:900;color:#fff;font-size:17px;box-shadow:0 10px 24px rgba(37,99,235,.3)}
+    .brand-txt{overflow:hidden;min-width:0}
+    .brand-txt h1{font-size:13.5px;margin:0;line-height:1.25;white-space:nowrap}
+    .brand-txt small{display:block;color:#94a3b8;font-size:11px;margin-top:3px;white-space:nowrap}
+    .app.collapsed .brand-txt{display:none}
+    .app.collapsed .brand{justify-content:center}
+
+    .nav-section-label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#475569;margin:18px 8px 8px;white-space:nowrap;overflow:hidden;transition:opacity .2s}
+    .app.collapsed .nav-section-label{opacity:0;margin:18px 0 8px}
+
+    .nav{border:0;background:transparent;width:100%;color:#94a3b8;text-align:left;padding:10px 12px;border-radius:13px;margin-bottom:4px;cursor:pointer;font-size:13.5px;display:flex;gap:10px;align-items:center;transition:.18s ease;white-space:nowrap;position:relative}
+    .nav .ico{width:22px;text-align:center;font-size:16px;flex-shrink:0}
+    .nav .txt{white-space:nowrap;overflow:hidden;transition:opacity .2s}
+    .nav:hover,.nav.active{background:linear-gradient(135deg,var(--blue),#06b6d4);color:#fff}
+    .app.collapsed .nav{justify-content:center;padding:11px 8px}
+    .app.collapsed .nav .txt{opacity:0;width:0;padding:0;overflow:hidden}
+    /* Tooltip for collapsed nav */
+    .nav::after{content:attr(data-tip);position:absolute;left:68px;top:50%;transform:translateY(-50%) translateX(-6px);background:#0f172a;border:1px solid rgba(255,255,255,.1);color:#fff;padding:6px 11px;border-radius:10px;font-size:12px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s ease,transform .15s ease;z-index:1000}
+    .app.collapsed .nav:hover::after{opacity:1;transform:translateY(-50%) translateX(0)}
+
+    .side-note{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:15px;padding:13px;color:#94a3b8;font-size:11.5px;line-height:1.6;margin-top:8px}
+    .app.collapsed .side-note{display:none}
+
+    /* ── NEW: Professional sidebar toggle at bottom ── */
+    .sidebar-footer{margin-top:auto;padding-top:14px;border-top:1px solid rgba(255,255,255,.08)}
+    .sidebar-toggle-btn{display:flex;align-items:center;gap:8px;width:100%;padding:10px 12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.07);color:#94a3b8;border-radius:12px;cursor:pointer;font-size:13px;transition:all .2s ease}
+    .sidebar-toggle-btn:hover{background:rgba(255,255,255,.13);color:#cbd5e1;border-color:rgba(255,255,255,.18)}
+    .sidebar-toggle-btn .tog-arrow{transition:transform .32s cubic-bezier(.4,0,.2,1);flex-shrink:0}
+    .sidebar-toggle-btn .tog-label{white-space:nowrap;overflow:hidden}
+    .app.collapsed .sidebar-toggle-btn{justify-content:center;padding:10px}
+    .app.collapsed .sidebar-toggle-btn .tog-label{display:none}
+    .app.collapsed .sidebar-toggle-btn .tog-arrow{transform:rotate(180deg)}
+
+    /* ── Main ── */
+    main{padding:0;min-width:0;display:flex;flex-direction:column}
+
+    /* ── NEW: Smart sticky top bar ── */
+    .top{position:sticky;top:0;z-index:80;background:rgba(244,247,251,.93);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:12px 28px;display:flex;justify-content:space-between;gap:14px;align-items:center;transform:translateY(0);transition:transform .3s cubic-bezier(.4,0,.2,1),opacity .25s ease}
+    .top.bar-hidden{transform:translateY(-105%)}
+    .title h2{margin:0;font-size:20px;letter-spacing:-.04em;font-weight:800}
+    .title p{margin:3px 0 0;color:var(--muted);font-size:12.5px}
+    .actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .btn{border:1px solid var(--border);background:#fff;border-radius:12px;padding:9px 14px;box-shadow:0 4px 12px rgba(15,23,42,.07);font-weight:700;cursor:pointer;font-size:12.5px;white-space:nowrap;transition:all .15s ease}
+    .btn:hover{box-shadow:0 6px 18px rgba(15,23,42,.11);transform:translateY(-1px)}
+    .btn.primary{border:0;background:linear-gradient(135deg,var(--blue),#06b6d4);color:white}
+    .btn.primary:hover{box-shadow:0 8px 22px rgba(29,78,216,.28)}
+
+    .content-area{padding:24px 28px;flex:1}
+
+    /* ── Views ── */
+    .view{display:none}.view.active{display:block}
+    .grid{display:grid;gap:16px}
+    .kpis{grid-template-columns:repeat(4,1fr);margin-bottom:16px}
+    .two{grid-template-columns:1.25fr .75fr}.three{grid-template-columns:repeat(3,1fr)}
+
+    /* ── Cards ── */
+    .card{background:rgba(255,255,255,.95);border:1px solid rgba(226,232,240,.9);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;min-width:0}
+    .card-title{display:flex;justify-content:space-between;gap:12px;margin-bottom:16px}
+    .card-title h3{margin:0;font-size:15.5px}
+    .card-title p{margin:5px 0 0;color:var(--muted);font-size:12px;line-height:1.45}
+    .badge{font-size:11px;font-weight:800;background:#eff6ff;color:#1d4ed8;border-radius:99px;padding:6px 10px;height:max-content;white-space:nowrap}
+    .badge.yellow{background:#fef9c3;color:#92400e}.badge.green{background:#ecfdf5;color:#047857}.badge.red{background:#fef2f2;color:#b91c1c}
+
+    /* ── Hero card ── */
+    .hero{background:linear-gradient(135deg,#0f172a,#1e293b);color:white}
+    .hero p{color:#dbeafe}
+    .hero-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:24px;align-items:center}
+    .hero-num{font-size:50px;font-weight:950;letter-spacing:-.07em;margin:12px 0}
+    .hero-boxes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
+    .hero-box{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:13px}
+    .hero-box b{display:block;font-size:19px}.hero-box span{font-size:11px;color:#cbd5e1}
+
+    /* ── KPI cards ── */
+    .kpi{position:relative;overflow:hidden}
+    .kpi:after{content:"";position:absolute;right:-30px;top:-30px;width:105px;height:105px;border-radius:50%;background:rgba(29,78,216,.07)}
+    .label{font-size:11.5px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+    .value{font-size:29px;font-weight:900;letter-spacing:-.05em;margin:9px 0}
+    .sub{font-size:12px;color:var(--muted);line-height:1.45}
+    .spark{height:7px;background:#e2e8f0;border-radius:99px;margin-top:12px;overflow:hidden}
+    .spark span{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--yellow));border-radius:99px}
+
+    /* ── Donut ── */
+    .donut-wrap{display:grid;place-items:center;min-height:200px}
+    .donut{--p:0;width:190px;height:190px;border-radius:50%;background:conic-gradient(var(--blue) calc(var(--p)*1%),var(--yellow) 0);display:grid;place-items:center;position:relative}
+    .donut:after{content:"";position:absolute;width:118px;height:118px;border-radius:50%;background:#fff}
+    .donut-inner{position:relative;z-index:1;text-align:center;color:var(--dark)}
+    .donut-inner b{font-size:24px}.donut-inner span{display:block;color:var(--muted);font-size:11px;margin-top:4px}
+    .legend{display:flex;justify-content:center;gap:13px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin-top:12px}
+    .dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+
+    /* ── Enrollment bars ── */
+    .bars{height:260px;display:flex;align-items:flex-end;gap:7px;border-bottom:1px solid var(--border);padding-top:8px}
+    .bar-group{flex:1;min-width:16px;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%}
+    .stack{height:215px;width:100%;display:flex;flex-direction:column;justify-content:flex-end;gap:2px}
+    .bar{width:100%;border-radius:7px 7px 3px 3px;min-height:3px;animation:growUp .7s ease both;transform-origin:bottom}
+    .bar.ret{background:linear-gradient(180deg,var(--blue),#1e40af)}.bar.new{background:linear-gradient(180deg,var(--yellow),var(--yellow2))}
+    .bar-label{font-size:9.5px;color:var(--muted);transform:rotate(-40deg);height:26px;white-space:nowrap}
+    @keyframes growUp{from{transform:scaleY(.05);opacity:.3}to{transform:scaleY(1);opacity:1}}
+
+    /* ── Line chart ── */
+    .line-card{height:250px}
+    .line-svg{width:100%;height:175px}
+    .draw-line{stroke-dasharray:900;stroke-dashoffset:900;animation:drawLine 1.4s ease forwards}
+    .draw-area{opacity:0;animation:fadeIn .9s ease .4s forwards}
+    @keyframes drawLine{to{stroke-dashoffset:0}}@keyframes fadeIn{to{opacity:.16}}
+
+    /* ── Tables ── */
+    .table-wrap{overflow:auto;border:1px solid var(--border);border-radius:18px;background:#fff}
+    table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px;min-width:820px}
+    th{background:#f8fafc;text-align:left;color:#475569;font-size:11px;text-transform:uppercase;letter-spacing:.05em;padding:13px 14px;border-bottom:1px solid var(--border)}
+    td{padding:11px 14px;border-bottom:1px solid #eef2f7;white-space:nowrap}
+    tfoot td{background:#f8fafc;font-weight:900}
+    .progress{height:9px;background:#e2e8f0;border-radius:99px;overflow:hidden;min-width:100px}
+    .progress span{display:block;height:100%;background:linear-gradient(90deg,var(--blue),#06b6d4);border-radius:99px}
+    .progress.warn span{background:linear-gradient(90deg,var(--amber),#f97316)}
+    .progress.bad span{background:linear-gradient(90deg,var(--red),#b91c1c)}
+    .progress.good span{background:linear-gradient(90deg,var(--green),#059669)}
+    .pill{border-radius:99px;padding:4px 9px;font-size:11px;font-weight:800}
+    .pill.good{background:#ecfdf5;color:#047857}.pill.warn{background:#fffbeb;color:#b45309}
+    .pill.bad{background:#fef2f2;color:#b91c1c}.pill.info{background:#eff6ff;color:#1d4ed8}
+
+    /* ── Inputs ── */
+    input,select{border:1px solid var(--border);border-radius:12px;padding:9px 10px;background:#fff;color:var(--dark);font:inherit;max-width:130px}
+    .small{max-width:82px}
+    .form-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;align-items:end}
+    .field label{display:block;font-size:11px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px}
+    .field input,.field select{width:100%;max-width:none}
+
+    /* ── Cash flow ── */
+    .cash-bars{height:260px;display:flex;align-items:flex-end;gap:10px;border-bottom:1px solid var(--border);padding-top:14px}
+    .cash-month{flex:1;text-align:center}
+    .cash-bar{background:linear-gradient(180deg,var(--yellow),var(--blue));border-radius:10px 10px 4px 4px;min-height:5px;margin-bottom:8px;animation:growUp .9s ease both}
+    .cash-month span{font-size:10px;color:var(--muted)}
+
+    /* ── Target compact row ── */
+    .compact-target{display:grid;grid-template-columns:200px 1fr 175px;gap:18px;align-items:center;margin-bottom:16px;padding:18px 22px;cursor:pointer;transition:box-shadow .2s,transform .15s}
+    .compact-target:hover{box-shadow:0 22px 52px rgba(15,23,42,.14);transform:translateY(-1px)}
+    .compact-target .expand-arrow{position:absolute;right:20px;top:50%;transform:translateY(-50%);font-size:18px;color:var(--muted);transition:transform .2s}
+    .compact-target:hover .expand-arrow{transform:translateY(-50%) translateX(2px);color:var(--blue)}
+    .compact-target{position:relative}
+    .compact-target .big{font-size:38px;font-weight:950;letter-spacing:-.06em;line-height:1}
+    .compact-target .caption{color:var(--muted);font-size:12px;margin-top:4px}
+    .compact-target .target-line{height:12px;background:#e2e8f0;border-radius:99px;overflow:hidden}
+    .compact-target .target-line span{height:100%;display:block;background:linear-gradient(90deg,var(--blue),var(--yellow));border-radius:99px;animation:growX .9s ease both;transform-origin:left}
+    .target-chip{text-align:right}
+    .target-chip b{display:block;font-size:16px}
+    .target-chip span{display:block;color:var(--muted);font-size:12px;margin-top:4px}
+    @keyframes growX{from{transform:scaleX(.05);opacity:.45}to{transform:scaleX(1);opacity:1}}
+
+    /* ── NEW: Target Achievement Modal ── */
+    .modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.6);backdrop-filter:blur(5px);z-index:500;display:none;align-items:center;justify-content:center;padding:24px}
+    .modal-overlay.open{display:flex}
+    .modal{background:#fff;border-radius:24px;width:100%;max-width:720px;max-height:88vh;overflow-y:auto;box-shadow:0 32px 90px rgba(15,23,42,.28);animation:modalPop .28s cubic-bezier(.34,1.56,.64,1) both}
+    @keyframes modalPop{from{transform:scale(.88);opacity:0}to{transform:scale(1);opacity:1}}
+    .modal-hdr{padding:22px 26px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;position:sticky;top:0;background:#fff;z-index:1;border-radius:24px 24px 0 0}
+    .modal-hdr h3{margin:0;font-size:18px}.modal-hdr p{margin:4px 0 0;color:var(--muted);font-size:12px}
+    .modal-close{border:none;background:#f1f5f9;border-radius:10px;width:34px;height:34px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:background .15s}
+    .modal-close:hover{background:#e2e8f0}
+    .modal-body{padding:20px 26px 26px}
+    .grade-ach-row{display:grid;grid-template-columns:64px 1fr 60px 90px;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid #f1f5f9}
+    .grade-ach-row:last-child{border-bottom:none}
+    .grade-ach-name{font-size:13px;font-weight:700}
+    .grade-ach-bar{height:10px;background:#e2e8f0;border-radius:99px;overflow:hidden}
+    .grade-ach-bar span{display:block;height:100%;border-radius:99px;transition:width .6s ease}
+    .grade-ach-pct{font-size:13px;font-weight:800;text-align:right}
+    .grade-ach-nums{font-size:11px;color:var(--muted);text-align:right}
+    .modal-summary-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+    .modal-kpi{background:#f8fafc;border-radius:14px;padding:14px 16px;text-align:center}
+    .modal-kpi .mk-val{font-size:22px;font-weight:900;letter-spacing:-.04em}
+    .modal-kpi .mk-lbl{font-size:11px;color:var(--muted);margin-top:3px}
+
+    /* ── NEW: Financial P&L view ── */
+    .pnl-kpis{grid-template-columns:repeat(4,1fr);margin-bottom:16px}
+    .pnl-rev{border-top:4px solid var(--blue)}
+    .pnl-exp{border-top:4px solid var(--red)}
+    .pnl-net{border-top:4px solid var(--green)}
+    .pnl-mar{border-top:4px solid var(--purple)}
+    .pnl-bar-wrap{display:flex;align-items:flex-end;gap:6px;height:180px;border-bottom:1px solid var(--border);padding-top:8px;margin-bottom:14px}
+    .pnl-grade-grp{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+    .pnl-grade-grp .pnl-bars{display:flex;gap:2px;align-items:flex-end;height:160px;width:100%}
+    .pnl-bar-r{flex:1;border-radius:5px 5px 2px 2px;background:var(--blue);min-height:2px;animation:growUp .7s ease both;transform-origin:bottom;opacity:.85}
+    .pnl-bar-e{flex:1;border-radius:5px 5px 2px 2px;background:var(--red);min-height:2px;animation:growUp .7s ease .1s both;transform-origin:bottom;opacity:.8}
+    .pnl-bar-lbl{font-size:9px;color:var(--muted);transform:rotate(-35deg);white-space:nowrap;margin-top:4px}
+
+    /* ── Toast ── */
+    .toast{position:fixed;right:22px;bottom:22px;background:#0f172a;color:white;padding:13px 18px;border-radius:16px;box-shadow:var(--shadow);font-size:13px;font-weight:700;opacity:0;transform:translateY(10px);pointer-events:none;transition:.25s;z-index:9999}
+    .toast.show{opacity:1;transform:translateY(0)}
+
+    /* ── Print / PDF ── */
+    @media print{
+      body{background:white!important}
+      aside,.top,.actions,.modal-overlay,.toast{display:none!important}
+      .app{display:block}
+      .content-area{padding:0}
+      .view{display:none!important}
+      .view.print-target{display:block!important}
+      .card{break-inside:avoid;box-shadow:none!important;border:1px solid #e2e8f0}
+      .hero{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+      .bar,.cash-bar,.progress span{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+      @page{size:A4 landscape;margin:1.2cm}
+    }
+
+    /* ── Responsive ── */
+    @media(max-width:1100px){.app{grid-template-columns:1fr}aside{height:auto;position:relative}.kpis,.two,.three,.hero-grid,.form-grid,.pnl-kpis{grid-template-columns:1fr!important}.top{flex-direction:column;align-items:flex-start}}
+  </style>
+</head>
+<body>
+<div class="app" id="appRoot">
+
+  <!-- ═══════════════ SIDEBAR ═══════════════ -->
+  <aside>
+    <div class="brand">
+      <div class="logo">SW</div>
+      <div class="brand-txt">
+        <h1>SAMA Winchester College</h1>
+        <small>Admissions, Capacity & Finance</small>
+      </div>
+    </div>
+
+    <div class="nav-section-label">CEO Views</div>
+    <button class="nav active" data-view="dashboard" data-tip="Dashboard"><span class="ico">📊</span><span class="txt">Dashboard</span></button>
+    <button class="nav" data-view="admissions" data-tip="Admissions Data"><span class="ico">🎓</span><span class="txt">Admissions Data</span></button>
+    <button class="nav" data-view="settings" data-tip="Fees & Capacity"><span class="ico">⚙️</span><span class="txt">Fees & Capacity</span></button>
+
+    <div class="nav-section-label">Analysis</div>
+    <button class="nav" data-view="reports" data-tip="Executive Reports"><span class="ico">📑</span><span class="txt">Executive Reports</span></button>
+    <button class="nav" data-view="cashflow" data-tip="Cash Flow"><span class="ico">💵</span><span class="txt">Cash Flow Forecast</span></button>
+    <button class="nav" data-view="scenarios" data-tip="What-If Analysis"><span class="ico">🧪</span><span class="txt">What-If Analysis</span></button>
+
+    <div class="nav-section-label">Finance</div>
+    <button class="nav" data-view="financials" data-tip="Financial P&amp;L"><span class="ico">📈</span><span class="txt">Financial P&amp;L</span></button>
+
+    <div class="side-note"><b>Data source</b><br>Google Sheet is the official data source. Dashboard refreshes all calculations on sync.</div>
+
+    <!-- ── NEW: Professional footer toggle ── -->
+    <div class="sidebar-footer">
+      <button class="sidebar-toggle-btn" onclick="toggleSidebar()">
+        <svg class="tog-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        <span class="tog-label">Collapse sidebar</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ═══════════════ MAIN ═══════════════ -->
+  <main>
+
+    <!-- ── NEW: Smart sticky top bar ── -->
+    <div class="top" id="topBar">
+      <div class="title"><h2 id="pageTitle">Dashboard</h2><p id="pageSubtitle">Executive snapshot for admissions, revenue, capacity and class planning.</p></div>
+      <div class="actions">
+        <button class="btn primary" onclick="loadSheetData(true)">🔄 Refresh Sheet Data</button>
+        <button class="btn" onclick="exportExcelAll()">📊 Export Excel</button>
+        <button class="btn" onclick="printCurrent()">🖨️ Print / PDF</button>
+      </div>
+    </div>
+
+    <div class="content-area">
+
+    <!-- ════════ DASHBOARD ════════ -->
+    <section id="dashboard" class="view active">
+      <div class="card hero" style="margin-bottom:16px">
+        <div class="hero-grid">
+          <div>
+            <div class="card-title"><div><h3>Next Year Revenue Outlook</h3><p>Confirmed students only. Pending shown separately.</p></div><span class="badge green">Live from Google Sheet</span></div>
+            <div class="hero-num" id="heroRevenue">—</div>
+            <p id="heroNarrative" style="font-size:13px;line-height:1.6"></p>
+            <div class="hero-boxes">
+              <div class="hero-box"><b id="heroStudents">—</b><span>Confirmed Students</span></div>
+              <div class="hero-box"><b id="heroClasses">—</b><span>Required Classes</span></div>
+              <div class="hero-box"><b id="heroSeats">—</b><span>Available Seats</span></div>
+            </div>
+          </div>
+          <div>
+            <div class="donut-wrap"><div class="donut" id="revenueDonut"><div class="donut-inner"><b id="donutPct">—</b><span>Returning Revenue</span></div></div></div>
+            <div class="legend"><span><i class="dot" style="background:var(--blue)"></i>Returning</span><span><i class="dot" style="background:var(--yellow)"></i>New</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid kpis">
+        <div class="card kpi"><div class="label">👥 Total Confirmed</div><div class="value" id="kStudents">—</div><div class="sub" id="kStudentsSub">—</div><div class="spark"><span id="targetSpark"></span></div></div>
+        <div class="card kpi"><div class="label">💰 Net Confirmed Revenue</div><div class="value" id="kRevenue">—</div><div class="sub" id="kRevenueSub">—</div><div class="spark"><span style="width:75%"></span></div></div>
+        <div class="card kpi"><div class="label">🏫 Classes Needed</div><div class="value" id="kClasses">—</div><div class="sub" id="kClassesSub">—</div><div class="spark"><span style="width:62%"></span></div></div>
+        <div class="card kpi"><div class="label">🏷️ Average Discount</div><div class="value" id="kDiscount">—</div><div class="sub" id="kDiscountSub">—</div><div class="spark"><span id="discountSpark"></span></div></div>
+      </div>
+
+      <!-- ── NEW: Clickable target row with expand arrow ── -->
+      <div class="card compact-target" onclick="openTargetModal()" title="Click to see breakdown by grade">
+        <div>
+          <div class="label">🎯 Actual Enrollment vs Target</div>
+          <div class="big" id="targetAchievement">—</div>
+          <div class="caption" id="targetAchievementSub">—</div>
+        </div>
+        <div>
+          <div class="target-line"><span id="targetAchievementBar"></span></div>
+          <div class="caption" style="margin-top:8px" id="targetGap">—</div>
+        </div>
+        <div class="target-chip"><b id="targetBadge">—</b><span>Actual / Target</span></div>
+        <span class="expand-arrow">›</span>
+      </div>
+
+      <div class="grid two">
+        <div class="card"><div class="card-title"><div><h3>Enrollment by Grade</h3><p>Blue = returning · Yellow = new students</p></div></div><div class="bars" id="enrollmentBars"></div></div>
+        <div class="card"><div class="card-title"><div><h3>Admission Priorities</h3><p>Grades with most open seats need marketing focus.</p></div></div><div id="priorityList"></div></div>
+      </div>
+
+      <div class="grid two" style="margin-top:16px">
+        <div class="card line-card"><div class="card-title"><div><h3>Expected Collections Timeline</h3><p>Based on Payment_Plan sheet.</p></div><span class="badge">EGP Cashflow</span></div><svg class="line-svg" id="collectionLine" viewBox="0 0 600 190" preserveAspectRatio="none"></svg></div>
+        <div class="card line-card"><div class="card-title"><div><h3>Student Mix</h3><p>Returning vs new confirmed students.</p></div><span class="badge yellow">Admissions Mix</span></div><div class="donut-wrap" style="min-height:165px"><div class="donut" id="studentDonut" style="width:148px;height:148px"><div class="donut-inner"><b id="studentDonutPct">—</b><span>Returning</span></div></div></div></div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="card-title"><div><h3>Grade-Level CEO Summary</h3><p>Students, revenue, classes and available seats by grade.</p></div></div>
+        <div class="table-wrap"><table><thead><tr><th>Grade</th><th>Returning</th><th>New</th><th>Total</th><th>Pending</th><th>Net Revenue</th><th>Target</th><th>Achievement</th><th>Classes</th><th>Capacity</th><th>Open Seats</th><th>Utilization</th></tr></thead><tbody id="summaryRows"></tbody><tfoot id="summaryFoot"></tfoot></table></div>
+      </div>
+    </section>
+
+    <!-- ════════ ADMISSIONS ════════ -->
+    <section id="admissions" class="view">
+      <div class="card"><div class="card-title"><div><h3>Admissions Data</h3><p>Loaded from Google Sheet. Local edits here are temporary only — refresh to reload from sheet.</p></div></div>
+        <div class="table-wrap"><table><thead><tr><th>Grade</th><th>Returning Confirmed</th><th>Returning Pending</th><th>New Confirmed</th><th>New Pending</th><th>Waitlisted</th><th>Target</th></tr></thead><tbody id="admissionRows"></tbody></table></div>
+      </div>
+    </section>
+
+    <!-- ════════ SETTINGS ════════ -->
+    <section id="settings" class="view">
+      <div class="card"><div class="card-title"><div><h3>Fees & Capacity Settings</h3><p>Loaded from Google Sheet. Use the sheet for official changes.</p></div></div>
+        <div class="card" style="margin-bottom:16px;background:#f8fafc">
+          <div class="form-grid">
+            <div class="field"><label>Bulk Average Discount %</label><input type="number" id="bulkDiscount" value="10"></div>
+            <div class="field"><label>Bulk Class Capacity</label><input type="number" id="bulkCapacity" value="25"></div>
+            <div class="field"><label>Bulk Payment Plan</label><select id="bulkPlan"><option>Google Sheet Plan</option></select></div>
+            <div class="field"><button class="btn primary" onclick="updateAllGrades()" style="width:100%">Update Local View</button></div>
+          </div>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Grade</th><th>Returning Fee</th><th>New Fee</th><th>Class Capacity</th><th>Average Discount %</th><th>Payment Plan</th><th>Direct Cost / Class</th></tr></thead><tbody id="settingsRows"></tbody></table></div>
+      </div>
+    </section>
+
+    <!-- ════════ REPORTS ════════ -->
+    <section id="reports" class="view">
+      <div class="grid three" style="margin-bottom:16px">
+        <div class="card kpi"><div class="label">🚨 Near Full Grades</div><div class="value" id="rNearFull">—</div><div class="sub">Utilization above 85%</div></div>
+        <div class="card kpi"><div class="label">📣 Marketing Focus</div><div class="value" id="rFocus">—</div><div class="sub">Grade with most open seats</div></div>
+        <div class="card kpi"><div class="label">📌 Class Cost Estimate</div><div class="value" id="rClassCost">—</div><div class="sub">Based on direct cost / class</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><div><h3>Density & Class Report</h3><p>Operational report for class opening decisions.</p></div></div>
+        <div class="table-wrap"><table><thead><tr><th>Grade</th><th>Total Students</th><th>Max Density</th><th>Classes</th><th>Total Seats</th><th>Open Seats</th><th>Utilization</th><th>Decision Signal</th></tr></thead><tbody id="densityRows"></tbody><tfoot id="densityFoot"></tfoot></table></div>
+      </div>
+    </section>
+
+    <!-- ════════ CASHFLOW ════════ -->
+    <section id="cashflow" class="view">
+      <div class="card" style="margin-bottom:16px"><div class="card-title"><div><h3>Expected Cash Flow</h3><p>Monthly collections based on Payment_Plan sheet.</p></div></div><div class="cash-bars" id="cashflowBars"></div></div>
+      <div class="card"><div class="table-wrap"><table><thead><tr><th>Payment Date</th><th>Expected Collections</th><th>% of Annual Revenue</th><th>Notes</th></tr></thead><tbody id="cashRows"></tbody><tfoot id="cashFoot"></tfoot></table></div></div>
+    </section>
+
+    <!-- ════════ SCENARIOS ════════ -->
+    <section id="scenarios" class="view">
+      <div class="grid three" style="margin-bottom:16px">
+        <div class="card"><div class="card-title"><div><h3>Scenario Controls</h3><p>Temporary only. Not saved to Google Sheet.</p></div></div>
+          <label>Pending Conversion <b id="convLabel">70%</b></label>
+          <input type="range" id="convRate" min="0" max="100" value="70" step="5" style="width:100%;max-width:none"><br><br>
+          <label>Fee Increase <b id="feeLabel">0%</b></label>
+          <input type="range" id="feeIncrease" min="0" max="25" value="0" step="1" style="width:100%;max-width:none"><br><br>
+          <label>Capacity Change <b id="capLabel">+0 seats</b></label>
+          <input type="range" id="capChange" min="-5" max="10" value="0" step="1" style="width:100%;max-width:none">
+        </div>
+        <div class="card kpi"><div class="label">Projected Students</div><div class="value" id="sStudents">—</div><div class="sub">Confirmed + converted pending</div></div>
+        <div class="card kpi"><div class="label">Class Impact</div><div class="value" id="sClasses">—</div><div class="sub" id="sClassesSub">—</div></div>
+      </div>
+      <div class="card"><div class="card-title"><div><h3>What-If by Grade</h3><p>Adjusted students, revenue and classes after scenario assumptions.</p></div><span class="badge" id="sRevenue">—</span></div>
+        <div class="table-wrap"><table><thead><tr><th>Grade</th><th>Projected Students</th><th>Adjusted Capacity</th><th>Adjusted Classes</th><th>Projected Revenue</th><th>Open Seats</th></tr></thead><tbody id="scenarioRows"></tbody><tfoot id="scenarioFoot"></tfoot></table></div>
+      </div>
+    </section>
+
+    <!-- ════════ NEW: FINANCIAL P&L ════════ -->
+    <section id="financials" class="view">
+      <div class="grid pnl-kpis">
+        <div class="card kpi pnl-rev"><div class="label">💰 Total Revenue (EGP)</div><div class="value" id="pnlRev">—</div><div class="sub">Confirmed student fees (net)</div></div>
+        <div class="card kpi pnl-exp"><div class="label">📤 Total Expenses (EGP)</div><div class="value" id="pnlExp">—</div><div class="sub" id="pnlExpSub">From expense data</div></div>
+        <div class="card kpi pnl-net"><div class="label">✅ Net Operating Income</div><div class="value" id="pnlNet">—</div><div class="sub" id="pnlNetSub">Revenue minus expenses</div></div>
+        <div class="card kpi pnl-mar"><div class="label">📊 Net Margin %</div><div class="value" id="pnlMar">—</div><div class="sub">Target: 25-35%</div><div class="spark"><span id="pnlMarSpark" style="width:0%"></span></div></div>
+      </div>
+
+      <div class="grid two" style="margin-bottom:16px">
+        <div class="card">
+          <div class="card-title"><div><h3>Revenue vs Expenses by Grade</h3><p><span style="color:var(--blue)">■</span> Revenue &nbsp; <span style="color:var(--red)">■</span> Allocated Expenses</p></div></div>
+          <div class="pnl-bar-wrap" id="pnlBars"></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><div><h3>Expense Breakdown by Category</h3><p>Loaded from Expenses sheet in Google Sheet.</p></div></div>
+          <div id="expCategoryList" style="font-size:13px"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <div><h3>Grade-Level Profitability</h3><p>Revenue vs allocated expenses and contribution margin per grade.</p></div>
+          <span class="badge" id="pnlGsheetBadge">Demo Data</span>
+        </div>
+        <div class="card" style="background:#fffbeb;border:1px solid #fde68a;border-radius:14px;padding:12px 16px;margin-bottom:14px;font-size:12.5px;color:#92400e">
+          <b>⚠️ Setup required:</b> To load real expense data, add an "Expenses" sheet to your Google Sheet with columns: <b>Category | Grade | Amount | Notes</b>. Then set <code>GIDS.expenses</code> in the script config.
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Grade</th><th>Net Revenue</th><th>Allocated Expenses</th><th>Contribution</th><th>Margin %</th><th>Students</th><th>Revenue / Student</th></tr></thead><tbody id="pnlGradeRows"></tbody><tfoot id="pnlGradeFoot"></tfoot></table></div>
+      </div>
+    </section>
+
+    </div><!-- /content-area -->
+  </main>
+</div>
+
+<!-- ═══════════ TARGET ACHIEVEMENT MODAL ═══════════ -->
+<div class="modal-overlay" id="targetModal" onclick="closeTargetModal(event)">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div><h3>🎯 Achievement by Grade</h3><p>Top-level view of each grade against its enrollment target.</p></div>
+      <button class="modal-close" onclick="document.getElementById('targetModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-summary-bar">
+        <div class="modal-kpi"><div class="mk-val" id="mTotalStudents">—</div><div class="mk-lbl">Total Confirmed</div></div>
+        <div class="modal-kpi"><div class="mk-val" id="mTotalTarget">—</div><div class="mk-lbl">Total Target</div></div>
+        <div class="modal-kpi" id="mAchKpi"><div class="mk-val" id="mAchPct">—</div><div class="mk-lbl">Overall Achievement</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:64px 1fr 60px 90px;gap:12px;padding:0 0 8px;border-bottom:2px solid var(--border);margin-bottom:8px">
+        <span style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase">Grade</span>
+        <span style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase">Progress</span>
+        <span style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;text-align:right">Achiev.</span>
+        <span style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;text-align:right">Act / Tgt</span>
+      </div>
+      <div id="gradeAchList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  /* ══════════════════════════════════════════
+     CONFIGURATION — Edit these to match your Google Sheet
+  ══════════════════════════════════════════ */
+  const SHEET_ID = '1ZXKm0AITeO_DQ3PLedJtv4D8r37pNS4c6fcsT4isTW0';
+  const GVIZ_BASE_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq';
+  const GIDS = {
+    settings:   '0',
+    admissions: '1347647034',
+    payments:   '226509467',
+    expenses:   ''  // ← Set to your Expenses sheet GID when ready
+  };
+  const STORAGE_KEY = 'sama_winchester_v2_cache';
+  const grades = ['Pre-K','KG1','KG2','G1','G2','G3','G4','G5','G6','G7','G8','G9','G10','G11','G12'];
+  let months = ['Jun 2026','Aug 2026','Oct 2026','Dec 2026'];
+  let collectionPlans = {'Google Sheet Plan':[.40,.20,.20,.20]};
+  let state = defaultState();
+  let expenses = defaultExpenses();
+  let isFirstRender = true;
+
+  /* ── Default state ── */
+  function defaultState(){
+    const fee={
+      'Pre-K':[85000,95000,15,22,45000],'KG1':[90000,100000,15,24,45000],'KG2':[90000,100000,15,24,45000],
+      'G1':[105000,120000,18,30,52000],'G2':[105000,120000,18,30,52000],'G3':[105000,120000,18,30,52000],
+      'G4':[110000,125000,20,34,56000],'G5':[110000,125000,20,34,56000],
+      'G6':[115000,130000,22,36,60000],'G7':[120000,140000,22,38,62000],'G8':[120000,140000,22,38,62000],
+      'G9':[130000,150000,25,42,68000],'G10':[130000,150000,25,42,68000],
+      'G11':[140000,160000,25,40,72000],'G12':[140000,160000,25,38,72000]
+    };
+    const adm={
+      'Pre-K':[10,2,5,3,2],'KG1':[12,1,6,2,1],'KG2':[11,2,4,3,0],
+      'G1':[15,2,8,2,3],'G2':[16,1,5,1,1],'G3':[14,2,6,2,0],
+      'G4':[18,1,7,3,2],'G5':[17,2,5,2,1],'G6':[19,1,8,2,3],
+      'G7':[20,2,7,1,2],'G8':[18,3,6,2,1],'G9':[22,1,9,3,2],
+      'G10':[21,2,7,2,1],'G11':[20,1,6,2,0],'G12':[19,2,5,1,0]
+    };
+    return {
+      settings: Object.fromEntries(grades.map(g=>[g,{returningFee:fee[g][0],newFee:fee[g][1],capacity:fee[g][2],target:fee[g][3],returningDiscount:10,collectionPlan:'Google Sheet Plan',directCostPerClass:fee[g][4]}])),
+      admissions: Object.fromEntries(grades.map(g=>[g,{returningConfirmed:adm[g][0],returningPending:adm[g][1],newConfirmed:adm[g][2],newPending:adm[g][3],waitlisted:adm[g][4],target:fee[g][3]}]))
+    };
+  }
+
+  /* ── Default demo expenses (EGP) ── */
+  function defaultExpenses(){
+    const teacherSal = {'Pre-K':380000,'KG1':380000,'KG2':380000,'G1':440000,'G2':440000,'G3':440000,'G4':480000,'G5':480000,'G6':520000,'G7':560000,'G8':560000,'G9':600000,'G10':600000,'G11':640000,'G12':640000};
+    const result = [];
+    grades.forEach(g=>result.push({category:'Teacher Salaries',grade:g,amount:teacherSal[g]||400000,notes:''}));
+    result.push({category:'Admin & Support Salaries',grade:'School-wide',amount:2800000,notes:''});
+    result.push({category:'Utilities & Facilities',grade:'School-wide',amount:780000,notes:''});
+    result.push({category:'Technology & Learning',grade:'School-wide',amount:520000,notes:''});
+    result.push({category:'Marketing & Admissions',grade:'School-wide',amount:420000,notes:''});
+    result.push({category:'Other Operating Expenses',grade:'School-wide',amount:380000,notes:''});
+    return result;
+  }
+
+  /* ── Helpers ── */
+  function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2600)}
+  function num(v){if(v===null||v===undefined)return 0;let s=String(v).replaceAll(',','').replaceAll('%','').trim();return Math.max(0,Number(s)||0)}
+  function fmtMoney(n){return 'EGP '+Math.round(Number(n)||0).toLocaleString()}
+  function fmtCompact(n){n=Number(n)||0;return n>=1000000?'EGP '+(n/1000000).toFixed(2)+'M':'EGP '+Math.round(n/1000).toLocaleString()+'K'}
+  function pct(a,b){return b?Math.round(a/b*100):0}
+  function norm(s){return String(s||'').toLowerCase().replaceAll('%','').replaceAll('_',' ').replaceAll('/',' ').replaceAll('-',' ').split(' ').filter(Boolean).join(' ').trim()}
+  function getVal(row,names){let map={};Object.keys(row).forEach(k=>map[norm(k)]=row[k]);for(const n of names){if(map[norm(n)]!==undefined)return map[norm(n)]}return ''}
+
+  /* ── NEW: Counter animations ── */
+  function countUpInt(el, target, dur=1100){
+    if(!isFirstRender){el.textContent=Math.round(target).toLocaleString();return}
+    const t0=Date.now(),from=0;
+    const tick=()=>{const p=Math.min((Date.now()-t0)/dur,1),e=1-Math.pow(1-p,3);el.textContent=Math.round(from+(target-from)*e).toLocaleString();if(p<1)requestAnimationFrame(tick)};
+    requestAnimationFrame(tick);
+  }
+  function countUpMoney(el, target, dur=1300){
+    if(!isFirstRender){el.textContent=fmtCompact(target);return}
+    const t0=Date.now();
+    const tick=()=>{const p=Math.min((Date.now()-t0)/dur,1),e=1-Math.pow(1-p,3);el.textContent=fmtCompact(Math.round(target*e));if(p<1)requestAnimationFrame(tick)};
+    requestAnimationFrame(tick);
+  }
+  function countUpPct(el, target, dur=1000, suffix='%'){
+    if(!isFirstRender){el.textContent=Math.round(target)+suffix;return}
+    const t0=Date.now();
+    const tick=()=>{const p=Math.min((Date.now()-t0)/dur,1),e=1-Math.pow(1-p,3);el.textContent=Math.round(target*e)+suffix;if(p<1)requestAnimationFrame(tick)};
+    requestAnimationFrame(tick);
+  }
+  function animateDonut(el, targetPct, dur=1100){
+    if(!isFirstRender){el.style.setProperty('--p',targetPct);return}
+    const t0=Date.now();
+    const tick=()=>{const p=Math.min((Date.now()-t0)/dur,1),e=1-Math.pow(1-p,3);el.style.setProperty('--p',Math.round(targetPct*e));if(p<1)requestAnimationFrame(tick)};
+    requestAnimationFrame(tick);
+  }
+
+  /* ── Core calculations ── */
+  function calc(g,scenario={}){
+    const s=state.settings[g],a=state.admissions[g];
+    const conv=scenario.convRate??0,feeInc=scenario.feeIncrease??0,capChange=scenario.capChange??0;
+    const rC=num(a.returningConfirmed),nC=num(a.newConfirmed),rP=num(a.returningPending),nP=num(a.newPending),wait=num(a.waitlisted);
+    const confirmed=rC+nC,pending=rP+nP,projected=confirmed+Math.round(pending*conv);
+    const capacity=Math.max(1,num(s.capacity)+capChange);
+    const classes=Math.max(confirmed>0?1:0,Math.ceil(confirmed/capacity));
+    const projectedClasses=Math.max(projected>0?1:0,Math.ceil(projected/capacity));
+    const seats=classes*capacity,open=Math.max(0,seats-confirmed),projOpen=Math.max(0,projectedClasses*capacity-projected);
+    const avgDiscount=num(s.returningDiscount);
+    const rNetFee=num(s.returningFee)*(1-avgDiscount/100),nNetFee=num(s.newFee)*(1-avgDiscount/100);
+    const rRev=rC*rNetFee,nRev=nC*nNetFee,confRev=rRev+nRev;
+    const grossRev=rC*num(s.returningFee)+nC*num(s.newFee);
+    const discountValue=Math.max(0,grossRev-confRev);
+    const pRev=rP*rNetFee+nP*nNetFee;
+    const projRev=(confRev+pRev*conv)*(1+feeInc);
+    const target=num(a.target||s.target);
+    const directCost=classes*num(s.directCostPerClass);
+    return{g,rC,nC,rP,nP,wait,confirmed,pending,projected,capacity,classes,projectedClasses,seats,open,projOpen,rNetFee,nNetFee,discount:avgDiscount,grossRev,discountValue,rRev,nRev,confRev,pRev,projRev,target,util:seats?confirmed/seats:0,directCost};
+  }
+  function rows(scenario={}){return grades.map(g=>calc(g,scenario))}
+  function totals(rs){return rs.reduce((a,r)=>{['rC','nC','rP','nP','wait','confirmed','pending','projected','classes','projectedClasses','seats','open','projOpen','grossRev','discountValue','rRev','nRev','confRev','pRev','projRev','target','directCost'].forEach(k=>a[k]=(a[k]||0)+(r[k]||0));return a},{})}
+  function cashflow(){const cash=Array(months.length).fill(0);rows().forEach(r=>{const plan=collectionPlans['Google Sheet Plan'];plan.forEach((p,i)=>cash[i]+=r.confRev*p)});return cash}
+
+  /* ── Expense calculations ── */
+  function calcExpenses(){
+    const rs=rows(),t=totals(rs);
+    const schoolWide=expenses.filter(e=>e.grade==='School-wide').reduce((a,e)=>a+e.amount,0);
+    const categoryTotals={};
+    expenses.forEach(e=>{categoryTotals[e.category]=(categoryTotals[e.category]||0)+e.amount});
+    const totalExp=expenses.reduce((a,e)=>a+e.amount,0);
+    const gradeExpenses={};
+    grades.forEach(g=>{
+      const direct=expenses.filter(e=>e.grade===g).reduce((a,e)=>a+e.amount,0);
+      const r=rs.find(x=>x.g===g);
+      const proportion=t.confirmed>0?(r?r.confirmed/t.confirmed:0):1/grades.length;
+      gradeExpenses[g]=direct+schoolWide*proportion;
+    });
+    return{totalExp,categoryTotals,gradeExpenses,schoolWide};
+  }
+
+  /* ── Render Dashboard ── */
+  function renderDashboard(){
+    const rs=rows(),t=totals(rs);
+    countUpMoney(document.getElementById('heroRevenue'),t.confRev,1400);
+    countUpInt(document.getElementById('heroStudents'),t.confirmed,1200);
+    countUpInt(document.getElementById('heroClasses'),t.classes,1000);
+    countUpInt(document.getElementById('heroSeats'),t.open,1100);
+
+    document.getElementById('heroNarrative').textContent=t.confirmed.toLocaleString()+' confirmed students generate '+fmtMoney(t.confRev)+' net revenue after an average discount of '+pct(t.discountValue,t.grossRev)+'%. Pending potential: '+fmtMoney(t.pRev)+'.';
+
+    const revPct=pct(t.rRev,t.confRev);
+    animateDonut(document.getElementById('revenueDonut'),revPct,1200);
+    document.getElementById('donutPct').textContent=revPct+'%';
+
+    countUpInt(document.getElementById('kStudents'),t.confirmed,1100);
+    document.getElementById('kStudentsSub').textContent=pct(t.confirmed,t.target)+'% of enrollment target · '+t.pending+' pending';
+    document.getElementById('targetSpark').style.width=Math.min(100,pct(t.confirmed,t.target))+'%';
+    countUpMoney(document.getElementById('kRevenue'),t.confRev,1200);
+    document.getElementById('kRevenueSub').textContent='Gross '+fmtCompact(t.grossRev)+' · Discount '+fmtCompact(t.discountValue);
+    countUpInt(document.getElementById('kClasses'),t.classes,900);
+    document.getElementById('kClassesSub').textContent='Estimated direct class cost: '+fmtMoney(t.directCost);
+    const wDisc=pct(t.discountValue,t.grossRev);
+    countUpPct(document.getElementById('kDiscount'),wDisc,1000);
+    document.getElementById('kDiscountSub').textContent='Total discount value: '+fmtMoney(t.discountValue);
+    document.getElementById('discountSpark').style.width=Math.min(100,wDisc)+'%';
+
+    const achTotal=pct(t.confirmed,t.target);
+    const gap=t.target-t.confirmed;
+    countUpPct(document.getElementById('targetAchievement'),achTotal,1100);
+    document.getElementById('targetAchievementSub').textContent=t.confirmed.toLocaleString()+' actual vs '+t.target.toLocaleString()+' target';
+    document.getElementById('targetAchievementBar').style.width=Math.min(100,achTotal)+'%';
+    document.getElementById('targetBadge').textContent=t.confirmed+' / '+t.target;
+    document.getElementById('targetGap').textContent=gap>0?gap.toLocaleString()+' students below target':Math.abs(gap).toLocaleString()+' students above target';
+
+    const max=Math.max(...rs.map(r=>r.confirmed),1);
+    document.getElementById('enrollmentBars').innerHTML=rs.map(r=>{
+      const rh=Math.max(3,r.rC/max*205),nh=Math.max(3,r.nC/max*205);
+      return '<div class="bar-group"><div class="stack"><div class="bar new" style="height:'+nh+'px"></div><div class="bar ret" style="height:'+rh+'px"></div></div><div class="bar-label">'+r.g+'</div></div>';
+    }).join('');
+
+    document.getElementById('priorityList').innerHTML=[...rs].sort((a,b)=>b.open-a.open).slice(0,6).map((r,i)=>'<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)"><div><b>'+r.g+'</b><div style="font-size:12px;color:var(--muted);margin-top:3px">'+r.confirmed+' confirmed · '+r.classes+' classes</div></div><span class="pill '+(i<2?'bad':i<4?'warn':'good')+'">'+r.open+' seats</span></div>').join('');
+
+    document.getElementById('summaryRows').innerHTML=rs.map(r=>{const u=pct(r.confirmed,r.seats),cls=u>=90?'bad':u>=75?'warn':'';return '<tr><td><b>'+r.g+'</b></td><td>'+r.rC+'</td><td>'+r.nC+'</td><td>'+r.confirmed+'</td><td>'+r.pending+'</td><td>'+fmtMoney(r.confRev)+'</td><td>'+r.target+'</td><td>'+pct(r.confirmed,r.target)+'%</td><td>'+r.classes+'</td><td>'+r.seats+'</td><td>'+r.open+'</td><td><div class="progress '+cls+'"><span style="width:'+Math.min(100,u)+'%"></span></div><span style="font-size:11px;color:var(--muted)">'+u+'%</span></td></tr>'}).join('');
+    document.getElementById('summaryFoot').innerHTML='<tr><td>Total</td><td>'+t.rC+'</td><td>'+t.nC+'</td><td>'+t.confirmed+'</td><td>'+t.pending+'</td><td>'+fmtMoney(t.confRev)+'</td><td>'+t.target+'</td><td>'+pct(t.confirmed,t.target)+'%</td><td>'+t.classes+'</td><td>'+t.seats+'</td><td>'+t.open+'</td><td>'+pct(t.confirmed,t.seats)+'%</td></tr>';
+
+    renderAnimatedCharts();
+    setTimeout(()=>{isFirstRender=false},2000);
+  }
+
+  function renderAnimatedCharts(){
+    const svg=document.getElementById('collectionLine');if(!svg)return;
+    const cash=cashflow(),max=Math.max(...cash,1);
+    const pts=cash.map((v,i)=>({x:40+i*(520/Math.max(1,cash.length-1)),y:155-(v/max*120),v}));
+    const line=pts.map((p,i)=>(i?'L':'M')+p.x+' '+p.y).join(' ');
+    const area='M '+pts[0].x+' 155 '+pts.map(p=>'L '+p.x+' '+p.y).join(' ')+' L '+pts[pts.length-1].x+' 155 Z';
+    svg.innerHTML='<path class="draw-area" d="'+area+'" fill="var(--blue)"></path><path class="draw-line" d="'+line+'" fill="none" stroke="var(--blue)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></path>'+pts.map((p,i)=>'<circle cx="'+p.x+'" cy="'+p.y+'" r="5" fill="var(--yellow)"><title>'+months[i]+': '+fmtMoney(p.v)+'</title></circle><text x="'+p.x+'" y="180" text-anchor="middle" font-size="14" fill="#64748b">'+String(months[i]).split(' ')[0]+'</text>').join('');
+    const t=totals(rows()),sp=pct(t.rC,t.confirmed);
+    animateDonut(document.getElementById('studentDonut'),sp,1200);
+    document.getElementById('studentDonutPct').textContent=sp+'%';
+  }
+
+  /* ── Render Inputs ── */
+  function renderInputs(){
+    document.getElementById('admissionRows').innerHTML=grades.map(g=>{const a=state.admissions[g];return '<tr><td><b>'+g+'</b></td>'+['returningConfirmed','returningPending','newConfirmed','newPending','waitlisted','target'].map(k=>'<td><input class="small" type="number" value="'+(a[k]||0)+'" onchange="updateAdmission(\''+g+'\',\''+k+'\',this.value)"></td>').join('')+'</tr>'}).join('');
+    document.getElementById('settingsRows').innerHTML=grades.map(g=>{const s=state.settings[g];return '<tr><td><b>'+g+'</b></td><td><input type="number" value="'+s.returningFee+'" onchange="updateSetting(\''+g+'\',\'returningFee\',this.value)"></td><td><input type="number" value="'+s.newFee+'" onchange="updateSetting(\''+g+'\',\'newFee\',this.value)"></td><td><input class="small" type="number" value="'+s.capacity+'" onchange="updateSetting(\''+g+'\',\'capacity\',this.value)"></td><td><input class="small" type="number" value="'+s.returningDiscount+'" onchange="updateSetting(\''+g+'\',\'returningDiscount\',this.value)"></td><td>Google Sheet Plan</td><td><input type="number" value="'+s.directCostPerClass+'" onchange="updateSetting(\''+g+'\',\'directCostPerClass\',this.value)"></td></tr>'}).join('');
+  }
+
+  function updateAdmission(g,k,v){state.admissions[g][k]=num(v);renderAll(false)}
+  function updateSetting(g,k,v){state.settings[g][k]=num(v);renderAll(false)}
+  function updateAllGrades(){const d=num(document.getElementById('bulkDiscount').value),c=num(document.getElementById('bulkCapacity').value);grades.forEach(g=>{state.settings[g].returningDiscount=d;if(c)state.settings[g].capacity=c});renderAll(true);toast('Local view updated only')}
+
+  /* ── Render Reports ── */
+  function renderReports(){
+    const rs=rows(),t=totals(rs);
+    document.getElementById('rNearFull').textContent=rs.filter(r=>r.util>=.85).length;
+    document.getElementById('rFocus').textContent=[...rs].sort((a,b)=>b.open-a.open)[0].g;
+    document.getElementById('rClassCost').textContent=fmtCompact(t.directCost);
+    document.getElementById('densityRows').innerHTML=rs.map(r=>{const u=pct(r.confirmed,r.seats),cls=u>=90?'bad':u>=75?'warn':'';const sig=u>=95?'<span class="pill bad">Open / split soon</span>':u>=80?'<span class="pill warn">Monitor closely</span>':r.open>=8?'<span class="pill info">Admission focus</span>':'<span class="pill good">Balanced</span>';return '<tr><td><b>'+r.g+'</b></td><td>'+r.confirmed+'</td><td>'+r.capacity+'</td><td>'+r.classes+'</td><td>'+r.seats+'</td><td>'+r.open+'</td><td><div class="progress '+cls+'"><span style="width:'+Math.min(100,u)+'%"></span></div><span style="font-size:11px;color:var(--muted)">'+u+'%</span></td><td>'+sig+'</td></tr>'}).join('');
+    document.getElementById('densityFoot').innerHTML='<tr><td>Total</td><td>'+t.confirmed+'</td><td>—</td><td>'+t.classes+'</td><td>'+t.seats+'</td><td>'+t.open+'</td><td>'+pct(t.confirmed,t.seats)+'%</td><td>—</td></tr>';
+  }
+
+  /* ── Render Cashflow ── */
+  function renderCashflow(){
+    const cash=cashflow(),total=cash.reduce((a,b)=>a+b,0),max=Math.max(...cash,1);
+    document.getElementById('cashflowBars').innerHTML=cash.map((v,i)=>'<div class="cash-month"><div class="cash-bar" title="'+months[i]+': '+fmtMoney(v)+'" style="height:'+Math.max(5,v/max*230)+'px"></div><span>'+months[i]+'</span></div>').join('');
+    document.getElementById('cashRows').innerHTML=cash.map((v,i)=>'<tr><td><b>'+months[i]+'</b></td><td>'+fmtMoney(v)+'</td><td>'+pct(v,total)+'%</td><td>Expected fee installment</td></tr>').join('');
+    document.getElementById('cashFoot').innerHTML='<tr><td>Total</td><td>'+fmtMoney(total)+'</td><td>100%</td><td>Confirmed revenue only</td></tr>';
+  }
+
+  /* ── Render Scenarios ── */
+  function renderScenarios(){
+    const conv=num(document.getElementById('convRate').value)/100,fee=num(document.getElementById('feeIncrease').value)/100,cap=Number(document.getElementById('capChange').value)||0;
+    document.getElementById('convLabel').textContent=Math.round(conv*100)+'%';
+    document.getElementById('feeLabel').textContent=Math.round(fee*100)+'%';
+    document.getElementById('capLabel').textContent=(cap>=0?'+':'')+cap+' seats';
+    const base=totals(rows()),rs=rows({convRate:conv,feeIncrease:fee,capChange:cap}),t=totals(rs);
+    document.getElementById('sStudents').textContent=t.projected.toLocaleString();
+    document.getElementById('sRevenue').textContent=fmtCompact(t.projRev);
+    document.getElementById('sClasses').textContent=t.projectedClasses.toLocaleString();
+    document.getElementById('sClassesSub').textContent=(t.projectedClasses-base.classes>=0?'+':'')+(t.projectedClasses-base.classes)+' vs current classes';
+    document.getElementById('scenarioRows').innerHTML=rs.map(r=>'<tr><td><b>'+r.g+'</b></td><td>'+r.projected+'</td><td>'+r.capacity+'</td><td>'+r.projectedClasses+'</td><td>'+fmtMoney(r.projRev)+'</td><td>'+r.projOpen+'</td></tr>').join('');
+    document.getElementById('scenarioFoot').innerHTML='<tr><td>Total</td><td>'+t.projected+'</td><td>—</td><td>'+t.projectedClasses+'</td><td>'+fmtMoney(t.projRev)+'</td><td>'+t.projOpen+'</td></tr>';
+  }
+
+  /* ── NEW: Render Financial P&L ── */
+  function renderFinancials(){
+    const rs=rows(),t=totals(rs);
+    const {totalExp,categoryTotals,gradeExpenses}=calcExpenses();
+    const netIncome=t.confRev-totalExp;
+    const netMargin=t.confRev>0?netIncome/t.confRev*100:0;
+
+    countUpMoney(document.getElementById('pnlRev'),t.confRev,1200);
+    countUpMoney(document.getElementById('pnlExp'),totalExp,1200);
+
+    const netEl=document.getElementById('pnlNet');
+    countUpMoney(netEl,Math.abs(netIncome),1100);
+    netEl.style.color=netIncome>=0?'var(--green)':'var(--red)';
+    document.getElementById('pnlNetSub').textContent=netIncome>=0?'Profitable operations':'Operating at a loss';
+
+    countUpPct(document.getElementById('pnlMar'),Math.round(netMargin),1000);
+    document.getElementById('pnlMar').style.color=netMargin>=25?'var(--green)':netMargin>=10?'var(--amber)':'var(--red)';
+    document.getElementById('pnlMarSpark').style.width=Math.min(100,Math.max(0,netMargin))+'%';
+
+    // Category breakdown
+    const catHTML=Object.entries(categoryTotals).sort((a,b)=>b[1]-a[1]).map(([cat,amt])=>{
+      const p=t.confRev>0?amt/t.confRev*100:0;
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f1f5f9"><div><div style="font-size:13px;font-weight:600">'+cat+'</div><div style="height:5px;background:#e2e8f0;border-radius:3px;width:180px;margin-top:5px;overflow:hidden"><div style="height:5px;background:var(--red);border-radius:3px;width:'+Math.min(100,p)+'%"></div></div></div><div style="text-align:right"><div style="font-size:13px;font-weight:700">'+fmtCompact(amt)+'</div><div style="font-size:11px;color:var(--muted)">'+p.toFixed(1)+'% of rev</div></div></div>';
+    }).join('');
+    document.getElementById('expCategoryList').innerHTML=catHTML;
+
+    // Bar chart
+    const maxRev=Math.max(...rs.map(r=>r.confRev),1);
+    document.getElementById('pnlBars').innerHTML=rs.map(r=>{
+      const exp=gradeExpenses[r.g]||0;
+      const rh=Math.max(2,r.confRev/maxRev*155),eh=Math.max(2,exp/maxRev*155);
+      return '<div class="pnl-grade-grp"><div class="pnl-bars"><div class="pnl-bar-r" title="'+r.g+' Revenue: '+fmtMoney(r.confRev)+'" style="height:'+rh+'px"></div><div class="pnl-bar-e" title="'+r.g+' Expenses: '+fmtMoney(exp)+'" style="height:'+eh+'px"></div></div><div class="pnl-bar-lbl">'+r.g+'</div></div>';
+    }).join('');
+
+    // Grade table
+    let totalAllocExp=0;
+    document.getElementById('pnlGradeRows').innerHTML=rs.map(r=>{
+      const exp=gradeExpenses[r.g]||0;totalAllocExp+=exp;
+      const contrib=r.confRev-exp;const margin=r.confRev>0?contrib/r.confRev*100:0;
+      const mcls=margin>=25?'good':margin>=0?'warn':'bad';
+      return '<tr><td><b>'+r.g+'</b></td><td>'+fmtMoney(r.confRev)+'</td><td>'+fmtMoney(exp)+'</td><td style="color:'+(contrib>=0?'var(--green)':'var(--red)')+'">'+fmtMoney(contrib)+'</td><td><span class="pill '+mcls+'">'+Math.round(margin)+'%</span></td><td>'+r.confirmed+'</td><td>'+fmtMoney(r.confirmed?r.confRev/r.confirmed:0)+'</td></tr>';
+    }).join('');
+    const tContrib=t.confRev-totalAllocExp;
+    document.getElementById('pnlGradeFoot').innerHTML='<tr><td>Total</td><td>'+fmtMoney(t.confRev)+'</td><td>'+fmtMoney(totalAllocExp)+'</td><td>'+fmtMoney(tContrib)+'</td><td>'+Math.round(t.confRev?tContrib/t.confRev*100:0)+'%</td><td>'+t.confirmed+'</td><td>'+fmtMoney(t.confirmed?t.confRev/t.confirmed:0)+'</td></tr>';
+  }
+
+  /* ── NEW: Target Achievement Modal ── */
+  function openTargetModal(){
+    const rs=rows(),t=totals(rs);
+    document.getElementById('mTotalStudents').textContent=t.confirmed.toLocaleString();
+    document.getElementById('mTotalTarget').textContent=t.target.toLocaleString();
+    const mAch=pct(t.confirmed,t.target);
+    document.getElementById('mAchPct').textContent=mAch+'%';
+    document.getElementById('mAchKpi').style.background=mAch>=90?'#ecfdf5':mAch>=70?'#fffbeb':'#fef2f2';
+    document.getElementById('gradeAchList').innerHTML=rs.map(r=>{
+      const ap=pct(r.confirmed,r.target);
+      const col=ap>=90?'#10b981':ap>=70?'#f59e0b':'#ef4444';
+      const bg=ap>=90?'#d1fae5':ap>=70?'#fef3c7':'#fee2e2';
+      return '<div class="grade-ach-row"><span class="grade-ach-name">'+r.g+'</span><div class="grade-ach-bar"><span style="width:'+Math.min(100,ap)+'%;background:'+col+'"></span></div><span class="grade-ach-pct" style="color:'+col+'">'+ap+'%</span><span class="grade-ach-nums">'+r.confirmed+' / '+r.target+'</span></div>';
+    }).join('');
+    document.getElementById('targetModal').classList.add('open');
+  }
+  function closeTargetModal(e){if(e.target===document.getElementById('targetModal'))document.getElementById('targetModal').classList.remove('open')}
+
+  /* ── NEW: Multi-sheet Excel export ── */
+  function exportExcelAll(){
+    function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+    function nc(v){return'<Cell><Data ss:Type="Number">'+(Number(v)||0)+'</Data></Cell>'}
+    function sc(v){return'<Cell><Data ss:Type="String">'+esc(v)+'</Data></Cell>'}
+    function hc(v){return'<Cell ss:StyleID="H"><Data ss:Type="String">'+esc(v)+'</Data></Cell>'}
+    function sheet(name,headers,dataRows){
+      return'<Worksheet ss:Name="'+esc(name)+'"><Table><Row>'+headers.map(hc).join('')+'</Row>'+dataRows.map(cols=>'<Row>'+cols.map((c,i)=>i===0?sc(c):nc(c)).join('')+'</Row>').join('')+'</Table></Worksheet>';
+    }
+    const rs=rows(),t=totals(rs),cash=cashflow(),cashTot=cash.reduce((a,b)=>a+b,0)||1;
+    const {totalExp,categoryTotals,gradeExpenses}=calcExpenses();
+
+    const sh1=sheet('Dashboard Summary',
+      ['Grade','Ret. Confirmed','New Confirmed','Total','Pending','Net Revenue (EGP)','Gross Revenue (EGP)','Discount (EGP)','Target','Achievement %','Classes','Total Seats','Open Seats'],
+      rs.map(r=>[r.g,r.rC,r.nC,r.confirmed,r.pending,Math.round(r.confRev),Math.round(r.grossRev),Math.round(r.discountValue),r.target,pct(r.confirmed,r.target),r.classes,r.seats,r.open])
+    );
+    const sh2=sheet('Density Report',
+      ['Grade','Total Students','Max Capacity','Classes','Total Seats','Open Seats','Utilization %'],
+      rs.map(r=>[r.g,r.confirmed,r.capacity,r.classes,r.seats,r.open,pct(r.confirmed,r.seats)])
+    );
+    const sh3=sheet('Cash Flow',
+      ['Month','Expected Collection (EGP)','% of Annual Revenue'],
+      cash.map((v,i)=>[months[i],Math.round(v),pct(v,cashTot)])
+    );
+    const sh4=sheet('Financial P&L by Grade',
+      ['Grade','Net Revenue (EGP)','Allocated Expenses (EGP)','Net Contribution (EGP)','Margin %','Students','Rev per Student'],
+      rs.map(r=>{const exp=gradeExpenses[r.g]||0,c=r.confRev-exp;return[r.g,Math.round(r.confRev),Math.round(exp),Math.round(c),Math.round(r.confRev?c/r.confRev*100:0),r.confirmed,Math.round(r.confirmed?r.confRev/r.confirmed:0)]})
+    );
+    const sh5=sheet('Expense Categories',
+      ['Category','Total Amount (EGP)','% of Revenue'],
+      Object.entries(categoryTotals).map(([k,v])=>[k,Math.round(v),Math.round(t.confRev?v/t.confRev*100:0)])
+    );
+
+    const xml=`<?xml version="1.0"?><?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
+  <Styles><Style ss:ID="H"><Font ss:Bold="1"/><Interior ss:Color="#DBEAFE" ss:Pattern="Solid"/></Style></Styles>
+  ${sh1}${sh2}${sh3}${sh4}${sh5}
+</Workbook>`;
+
+    const blob=new Blob([xml],{type:'application/vnd.ms-excel'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download='SAMA_Winchester_Report_'+new Date().toISOString().slice(0,10)+'.xls';a.click();
+    URL.revokeObjectURL(url);toast('Full report exported — 5 sheets');
+  }
+
+  /* ── NEW: Print current view ── */
+  function printCurrent(){
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('print-target'));
+    const cur=document.querySelector('.view.active');if(cur)cur.classList.add('print-target');
+    window.print();
+  }
+
+  /* ── Render All ── */
+  function renderAll(inputs=true){
+    renderDashboard();
+    if(inputs)renderInputs();
+    renderReports();
+    renderCashflow();
+    renderScenarios();
+    renderFinancials();
+  }
+
+  /* ── NEW: Sidebar toggle (professional) ── */
+  function toggleSidebar(){
+    const app=document.getElementById('appRoot');
+    const collapsed=app.classList.toggle('collapsed');
+    const lbl=document.querySelector('.tog-label');
+    if(lbl)lbl.textContent=collapsed?'Expand sidebar':'Collapse sidebar';
+  }
+
+  /* ── Navigation ── */
+  const viewTitles={
+    dashboard:['Dashboard','Executive snapshot for admissions, revenue, capacity and class planning.'],
+    admissions:['Admissions Data','View admissions numbers loaded from Google Sheet.'],
+    settings:['Fees & Capacity','View fees, discounts, class density and payment plan assumptions from Google Sheet.'],
+    reports:['Executive Reports','Detailed density, utilization and operational decision signals.'],
+    cashflow:['Cash Flow Forecast','Monthly expected collections based on Payment_Plan sheet.'],
+    scenarios:['What-If Analysis','Temporary scenario testing without changing official data.'],
+    financials:['Financial P&L','Revenue vs expenses, net operating income and margin by grade.']
+  };
+  document.querySelectorAll('.nav').forEach(btn=>btn.addEventListener('click',()=>{
+    document.querySelectorAll('.nav').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+    const v=btn.dataset.view;
+    document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+    document.getElementById(v).classList.add('active');
+    const info=viewTitles[v]||[v,''];
+    document.getElementById('pageTitle').textContent=info[0];
+    document.getElementById('pageSubtitle').textContent=info[1];
+    renderAll(false);
+  }));
+
+  /* ── NEW: Smart sticky bar — hide on scroll down, show on scroll up ── */
+  let lastScrollY=0;
+  window.addEventListener('scroll',()=>{
+    const cur=window.scrollY;
+    const bar=document.getElementById('topBar');
+    if(cur>lastScrollY&&cur>90)bar.classList.add('bar-hidden');
+    else bar.classList.remove('bar-hidden');
+    lastScrollY=cur;
+  },{passive:true});
+
+  /* ── Scenario sliders ── */
+  ['convRate','feeIncrease','capChange'].forEach(id=>document.getElementById(id).addEventListener('input',renderScenarios));
+
+  /* ══════════ Google Sheet Loading ════════════ */
+  function norm(s){return String(s||'').toLowerCase().replaceAll('%','').replaceAll('_',' ').replaceAll('/',' ').replaceAll('-',' ').split(' ').filter(Boolean).join(' ').trim()}
+  function getVal(row,names){let map={};Object.keys(row).forEach(k=>map[norm(k)]=row[k]);for(const n of names){if(map[norm(n)]!==undefined)return map[norm(n)]}return ''}
+
+  function loadGvizSheet(gid){return new Promise((resolve,reject)=>{const cb='gviz_cb_'+gid+'_'+Date.now()+'_'+Math.floor(Math.random()*10000);const sc=document.createElement('script');const timer=setTimeout(()=>{cleanup();reject(new Error('Timeout'))},12000);function cleanup(){clearTimeout(timer);if(sc.parentNode)sc.parentNode.removeChild(sc);try{delete window[cb]}catch(e){window[cb]=undefined}}window[cb]=data=>{try{if(!data||data.status!=='ok')throw new Error('Sheet not OK');const cols=(data.table.cols||[]).map(c=>(c.label||c.id||'').trim());const rows=(data.table.rows||[]).map(r=>{let obj={};(r.c||[]).forEach((cell,i)=>{const key=cols[i]||('Col'+(i+1));obj[key]=cell?(cell.f!==undefined?cell.f:cell.v):''});return obj});cleanup();resolve(rows)}catch(err){cleanup();reject(err)}};sc.onerror=()=>{cleanup();reject(new Error('Script error'))};sc.src=GVIZ_BASE_URL+'?gid='+encodeURIComponent(gid)+'&tqx=responseHandler:'+encodeURIComponent(cb)+'&cachebust='+Date.now();document.body.appendChild(sc)})}
+
+  async function loadSheetData(showMsg=false){
+    try{
+      if(showMsg)toast('Loading Google Sheet data...');
+      const sheets=[GIDS.settings,GIDS.admissions,GIDS.payments];
+      if(GIDS.expenses)sheets.push(GIDS.expenses);
+      const data=await Promise.all(sheets.map(g=>loadGvizSheet(g)));
+      applySheetData(data[0],data[1],data[2]);
+      if(GIDS.expenses&&data[3])applyExpenseData(data[3]);
+      localStorage.setItem(STORAGE_KEY,JSON.stringify({state,months,collectionPlans,expenses}));
+      renderAll(true);toast('Google Sheet data loaded ✓');
+    }catch(e){
+      console.error('Sheet error:',e);
+      if(!loadLocalCache()){state=defaultState();renderAll(true)}
+      toast('Google Sheet error — using cached data');
+    }
+  }
+
+  function applySheetData(settingsRows,admissionsRows,paymentRows){
+    const next=defaultState();
+    settingsRows.forEach(r=>{const g=getVal(r,['Grade','Class','Stage']);if(!g||!next.settings[g])return;const rf=num(getVal(r,['Returning Fee','Returning Student Fee','Returning Students Fees']));const nf=num(getVal(r,['New Fee','New Student Fee','New Students Fees']));const disc=num(getVal(r,['Average Discount %','Average Discount','Returning Discount %','Discount %','Discount']));const cap=num(getVal(r,['Max Class Capacity','Class Capacity','Max Capacity','Capacity']));const target=num(getVal(r,['Target','Enrollment Target','Target Enrollment']));const cost=num(getVal(r,['Direct Cost / Class','Direct Cost / Section','Direct Cost','Class Cost']));if(rf)next.settings[g].returningFee=rf;if(nf)next.settings[g].newFee=nf;next.settings[g].returningDiscount=disc;if(cap)next.settings[g].capacity=cap;if(target)next.settings[g].target=target;if(cost)next.settings[g].directCostPerClass=cost;next.admissions[g].target=next.settings[g].target});
+    admissionsRows.forEach(r=>{const g=getVal(r,['Grade','Class','Stage']);if(!g||!next.admissions[g])return;next.admissions[g].returningConfirmed=num(getVal(r,['Returning Confirmed','Ret Confirmed','Ret. Confirmed']));next.admissions[g].returningPending=num(getVal(r,['Returning Pending','Ret Pending','Ret. Pending']));next.admissions[g].newConfirmed=num(getVal(r,['New Confirmed']));next.admissions[g].newPending=num(getVal(r,['New Pending']));next.admissions[g].waitlisted=num(getVal(r,['Waitlisted','Waiting List']))});
+    const payments=paymentRows.map(r=>({month:getVal(r,['Payment Date','Month','Date','Installment Date']),percent:num(getVal(r,['Percentage','Percent','Payment %','Payment Percentage']))})).filter(x=>x.month&&x.percent>0);
+    if(payments.length){months=payments.map(x=>x.month);const total=payments.reduce((a,x)=>a+x.percent,0)||100;collectionPlans={'Google Sheet Plan':payments.map(x=>x.percent/total)}}
+    state=next;
+  }
+
+  function applyExpenseData(rows){
+    expenses=rows.map(r=>({category:getVal(r,['Category','Expense Category','Type'])||'Other',grade:getVal(r,['Grade','Class','Stage'])||'School-wide',amount:num(getVal(r,['Amount','Amount (EGP)','EGP','Value'])),notes:getVal(r,['Notes','Note','Description'])||''})).filter(e=>e.amount>0);
+    document.getElementById('pnlGsheetBadge').textContent='Live from Google Sheet';
+  }
+
+  function loadLocalCache(){try{const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');if(!saved||!saved.state)return false;state=saved.state;months=saved.months||months;collectionPlans=saved.collectionPlans||collectionPlans;if(saved.expenses)expenses=saved.expenses;renderAll(true);return true}catch(e){return false}}
+
+  /* ── Init ── */
+  renderAll();
+  loadSheetData(false);
+</script>
+</body>
+</html>
