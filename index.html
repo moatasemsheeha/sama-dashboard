@@ -9,7 +9,13 @@
   <style>
     :root{--blue:#1d4ed8;--blue2:#2563eb;--yellow:#facc15;--yellow2:#eab308;--dark:#0f172a;--muted:#64748b;--bg:#f4f7fb;--card:#fff;--border:#e2e8f0;--green:#10b981;--red:#ef4444;--amber:#f59e0b;--purple:#8b5cf6;--shadow:0 16px 40px rgba(15,23,42,.10);--radius:22px;}
     *{box-sizing:border-box}
-    body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:linear-gradient(135deg,#f8fafc,#eef4ff);color:var(--dark);overflow-x:hidden}
+    body{margin:0;font-family:Segoe UI,Calibri,Arial,sans-serif;background:linear-gradient(135deg,#f8fafc,#eef4ff);color:var(--dark);overflow-x:hidden}
+    body.rtl{font-family:Calibri,Segoe UI,Tahoma,Arial,sans-serif;letter-spacing:0}
+    body.rtl h1,body.rtl h2,body.rtl h3,body.rtl .label,body.rtl th{font-weight:900}
+    body.rtl .title,body.rtl .card-title,body.rtl .hero,body.rtl table,body.rtl .sub,body.rtl .caption{text-align:right}
+    body.rtl .actions{direction:ltr}
+    body.rtl .nav{text-align:right}
+    body.rtl .money-green,body.rtl .money-red{font-family:Calibri,Segoe UI,Tahoma,Arial,sans-serif}
 
     /* ── Layout ── */
     .app{display:grid;grid-template-columns:275px 1fr;min-height:100vh;transition:grid-template-columns .32s cubic-bezier(.4,0,.2,1)}
@@ -153,10 +159,10 @@
     .cash-month span{font-size:10px;color:var(--muted)}
 
     /* ── Target compact row ── */
-    .compact-target{display:grid;grid-template-columns:200px 1fr 150px 38px;gap:18px;align-items:center;margin-bottom:16px;padding:22px 20px;min-height:106px;cursor:pointer;transition:box-shadow .2s,transform .15s;position:relative}
+    .compact-target{display:grid;grid-template-columns:200px 1fr 150px 38px;gap:16px;align-items:center;margin-bottom:16px;padding:18px 20px;cursor:pointer;transition:box-shadow .2s,transform .15s;position:relative}
     .compact-target:hover{box-shadow:0 22px 52px rgba(15,23,42,.14);transform:translateY(-1px)}
     .compact-target .big{font-size:38px;font-weight:950;letter-spacing:-.06em;line-height:1}
-    .compact-target .caption{color:var(--muted);font-size:12px;margin-top:6px;line-height:1.45}
+    .compact-target .caption{color:var(--muted);font-size:12px;margin-top:4px}
     .compact-target .target-line{height:12px;background:#e2e8f0;border-radius:99px;overflow:hidden}
     .compact-target .target-line span{height:100%;display:block;background:linear-gradient(90deg,var(--blue),var(--yellow));border-radius:99px;animation:growX .9s ease both;transform-origin:left}
     .target-chip{text-align:right}
@@ -202,18 +208,21 @@
     .pnl-bar-wrap{display:flex;align-items:flex-end;gap:6px;height:180px;border-bottom:1px solid var(--border);padding-top:8px;margin-bottom:14px}
     .pnl-grade-grp{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
     .pnl-grade-grp .pnl-bars{display:flex;gap:2px;align-items:flex-end;height:160px;width:100%}
-    .pnl-bar-r{flex:1;border-radius:6px 6px 2px 2px;background:linear-gradient(180deg,var(--green),#059669);min-height:2px;animation:growUp .7s ease both;transform-origin:bottom;opacity:.9;box-shadow:0 8px 18px rgba(16,185,129,.16)}
-    .pnl-bar-e{flex:1;border-radius:6px 6px 2px 2px;background:linear-gradient(180deg,var(--red),#dc2626);min-height:2px;animation:growUp .7s ease .1s both;transform-origin:bottom;opacity:.82;box-shadow:0 8px 18px rgba(239,68,68,.12)}
+    .pnl-bar-r{flex:1;border-radius:7px 7px 2px 2px;background:linear-gradient(180deg,var(--green),#059669);min-height:2px;animation:growUp .7s ease both;transform-origin:bottom;opacity:.9;box-shadow:0 8px 16px rgba(16,185,129,.18)}
+    .pnl-bar-e{flex:1;border-radius:7px 7px 2px 2px;background:linear-gradient(180deg,var(--red),#b91c1c);min-height:2px;animation:growUp .7s ease .1s both;transform-origin:bottom;opacity:.82;box-shadow:0 8px 16px rgba(239,68,68,.14)}
     .pnl-bar-lbl{font-size:9px;color:var(--muted);transform:rotate(-35deg);white-space:nowrap;margin-top:4px}
 
-    .other-ie-grid{display:grid;grid-template-columns:1fr 1px 1fr;gap:18px;align-items:start}
-    .other-divider{width:1px;background:linear-gradient(180deg,transparent,var(--border),transparent);height:100%;min-height:180px}
-    .finance-list-row{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:9px 0;border-bottom:1px solid #f1f5f9}
-    .finance-list-row .name{font-size:13px;font-weight:650}.finance-list-row .meta{font-size:11px;color:var(--muted);margin-top:4px}.finance-list-row .amt{font-size:13px;font-weight:800;text-align:right;white-space:nowrap}.amt-income{color:var(--green)}.amt-expense{color:var(--red)}
+
+    .pnl-split{display:grid;grid-template-columns:1fr 1fr;gap:18px;position:relative}
+    .pnl-split:before{content:"";position:absolute;top:0;bottom:0;left:50%;width:1px;background:linear-gradient(180deg,transparent,var(--border),transparent)}
+    .pnl-split-col{min-width:0;padding:0 6px}.money-green{color:var(--green)!important}.money-red{color:var(--red)!important}
+    .lang-btn{min-width:86px}
+    body.rtl{direction:rtl}body.rtl .title,body.rtl th,body.rtl td{text-align:right}body.rtl .nav{text-align:right}body.rtl .actions{justify-content:flex-start}body.rtl .sidebar-edge-toggle{left:auto;right:263px;border-left:1px solid rgba(255,255,255,.12);border-right:0;border-radius:14px 0 0 14px}body.rtl .app.collapsed .sidebar-edge-toggle{right:60px;left:auto}body.rtl .nav::after{left:auto;right:68px}body.rtl .target-chip{text-align:left}body.rtl .pnl-split:before{left:auto;right:50%}
 
     /* ── Toast ── */
     .toast{position:fixed;right:22px;bottom:22px;background:#0f172a;color:white;padding:13px 18px;border-radius:16px;box-shadow:var(--shadow);font-size:13px;font-weight:700;opacity:0;transform:translateY(10px);pointer-events:none;transition:.25s;z-index:9999}
     .toast.show{opacity:1;transform:translateY(0)}
+
 
     /* ── Author signature ── */
     .author-signature{position:fixed;right:18px;bottom:14px;z-index:70;background:rgba(255,255,255,.88);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(226,232,240,.95);box-shadow:0 10px 28px rgba(15,23,42,.10);border-radius:999px;padding:7px 12px;font-size:11.5px;color:var(--muted);font-weight:700;letter-spacing:.01em;pointer-events:none}
@@ -221,108 +230,143 @@
     body.rtl .author-signature{right:auto;left:18px}
     .toast.show ~ .author-signature{bottom:68px}
 
-    /* ── Print / PDF — executive report layout ── */
+    /* ── Print / PDF ── */
     @media print{
-      @page{size:A4 landscape;margin:10mm 10mm 12mm}
-      *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
-      html,body{background:#fff!important;color:#0f172a!important;font-family:Calibri,Segoe UI,Arial,sans-serif!important;font-size:10.5px!important;line-height:1.35!important;overflow:visible!important}
-      body::before{content:"SAMA Winchester College | " attr(data-print-title);display:block;margin:0 0 7mm;padding:0 0 4mm;border-bottom:2px solid #1d4ed8;font-size:18px;font-weight:900;color:#0f172a;letter-spacing:-.02em}
-      body::after{content:"Prepared by Moatasem Sheha";position:fixed;right:10mm;bottom:3.5mm;font-size:9.5px;font-weight:800;color:#64748b}
-      body.rtl::after{right:auto;left:10mm}
+      @page{size:A4 landscape;margin:10mm}
+      *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;box-shadow:none!important;text-shadow:none!important}
+      html,body{background:#fff!important;color:#0f172a!important;font-family:Calibri,Segoe UI,Arial,sans-serif!important;font-size:10pt!important;overflow:visible!important}
+      body::before{content:"SAMA Winchester College | " attr(data-print-title) " | " attr(data-print-date);position:fixed;top:0;left:0;right:0;height:9mm;padding:0 3mm;border-bottom:1px solid #cbd5e1;background:#fff;color:#0f172a;font-size:10pt;font-weight:900;display:flex;align-items:center;z-index:9999}
+      body::after{content:"Prepared by Moatasem Sheha";position:fixed;bottom:0;left:0;right:0;height:7mm;padding:0 3mm;border-top:1px solid #cbd5e1;background:#fff;color:#475569;font-size:8.5pt;font-weight:800;display:flex;align-items:center;justify-content:flex-end;z-index:9999}
+      body.rtl::before{direction:rtl;text-align:right;justify-content:flex-start;font-family:Calibri,Segoe UI,Tahoma,Arial,sans-serif!important}
+      body.rtl::after{direction:rtl;justify-content:flex-start;font-family:Calibri,Segoe UI,Tahoma,Arial,sans-serif!important;content:"إعداد وتصميم: Moatasem Sheha"}
       aside,.top,.actions,.modal-overlay,.toast,.author-signature,.sidebar-edge-toggle,.side-note{display:none!important}
       .app{display:block!important;min-height:auto!important}
-      main{display:block!important;padding:0!important}
-      .content-area{display:block!important;padding:0!important;margin:0!important}
+      main,.content-area{display:block!important;padding:0!important;margin:0!important;width:100%!important}
       .view{display:none!important}
-      .view.print-target{display:block!important}
-      .view.print-target::before{content:attr(data-print-subtitle);display:block;margin:-5mm 0 5mm;color:#64748b;font-size:10.5px;font-weight:600}
-      .grid,.kpis,.two,.three,.pnl-kpis{display:grid!important;gap:6mm!important}
-      .kpis,.pnl-kpis{grid-template-columns:repeat(4,1fr)!important;margin-bottom:6mm!important}
-      .two{grid-template-columns:1.18fr .82fr!important}
-      .three{grid-template-columns:repeat(3,1fr)!important}
-      .card{background:#fff!important;border:1px solid #cbd5e1!important;border-radius:10px!important;box-shadow:none!important;padding:4.5mm!important;margin:0 0 5mm!important;break-inside:avoid!important;page-break-inside:avoid!important}
-      .card-title{margin-bottom:3mm!important;gap:3mm!important;align-items:flex-start!important}
-      .card-title h3{font-size:12px!important;font-weight:900!important;color:#0f172a!important;margin:0!important;letter-spacing:0!important}
-      .card-title p{font-size:9.5px!important;color:#475569!important;margin:1mm 0 0!important;line-height:1.35!important}
-      .badge{font-size:8.5px!important;padding:3px 7px!important;border:1px solid #bfdbfe!important;background:#eff6ff!important;color:#1d4ed8!important}
-      .label{font-size:9px!important;font-weight:900!important;color:#475569!important;letter-spacing:.04em!important}
-      .value{font-size:20px!important;font-weight:900!important;line-height:1.05!important;margin:2mm 0 1mm!important;color:#0f172a!important}
-      .sub{font-size:9.2px!important;color:#475569!important;line-height:1.35!important}
-      .spark{height:4px!important;margin-top:2mm!important;background:#e2e8f0!important}
-      .kpi{min-height:28mm!important;padding:4mm!important}
-      .kpi:after{display:none!important}
-
-      /* Dashboard hero print layout: left numbers, right donut */
-      #dashboard .hero{background:linear-gradient(135deg,#0f172a,#1e293b)!important;color:#fff!important;border:0!important;padding:5mm!important;margin-bottom:6mm!important}
-      #dashboard .hero-grid{display:grid!important;grid-template-columns:1.45fr .55fr!important;gap:6mm!important;align-items:center!important}
-      #dashboard .hero .card-title{margin-bottom:2mm!important}
-      #dashboard .hero .card-title h3{color:#fff!important;font-size:13px!important}
-      #dashboard .hero .card-title p,#dashboard .hero p{color:#dbeafe!important;font-size:9.5px!important;line-height:1.35!important}
-      #dashboard .hero-num{font-size:30px!important;line-height:.98!important;margin:2mm 0!important;color:#fff!important;letter-spacing:-.04em!important}
-      #dashboard .hero-boxes{display:grid!important;grid-template-columns:1fr 1fr!important;gap:3mm!important;margin-top:3mm!important;max-width:132mm!important}
-      #dashboard .hero-box:nth-child(3){grid-column:1 / span 2!important}
-      #dashboard .hero-box{border-radius:8px!important;padding:3mm!important;background:rgba(255,255,255,.10)!important;border:1px solid rgba(255,255,255,.22)!important;min-height:16mm!important}
-      #dashboard .hero-box b{font-size:15px!important;color:#fff!important;display:block!important;margin-bottom:1mm!important}
-      #dashboard .hero-box span{font-size:8.8px!important;color:#dbeafe!important}
-      #dashboard .donut-wrap{min-height:45mm!important;display:grid!important;place-items:center!important}
-      #dashboard .donut{width:42mm!important;height:42mm!important;background:conic-gradient(var(--blue) calc(var(--p)*1%),var(--yellow) 0)!important}
-      #dashboard .donut:after{width:25mm!important;height:25mm!important;background:#fff!important}
-      #dashboard .donut-inner b{font-size:13px!important;color:#0f172a!important}
-      #dashboard .donut-inner span{font-size:8.5px!important;color:#475569!important}
-      .legend{font-size:8.8px!important;margin-top:1.5mm!important;gap:3mm!important;color:#475569!important}
-      .dot{width:7px!important;height:7px!important;margin-right:3px!important}
-
-      /* Dashboard secondary components */
-      .compact-target{display:grid!important;grid-template-columns:38mm 1fr 32mm 7mm!important;gap:4mm!important;min-height:22mm!important;padding:4mm!important;margin-bottom:6mm!important;cursor:default!important}
-      .compact-target:hover{transform:none!important;box-shadow:none!important}
-      .compact-target .big{font-size:22px!important;line-height:1!important;color:#0f172a!important}
-      .compact-target .caption{font-size:9px!important;margin-top:1mm!important;line-height:1.25!important;color:#475569!important}
-      .compact-target .target-line{height:5px!important;background:#e2e8f0!important}
-      .expand-arrow-col,.ct-tip{display:none!important}
-      .target-chip b{font-size:11px!important;color:#0f172a!important}
-      .target-chip span{font-size:8.5px!important;color:#64748b!important}
-      .bars,.cash-bars{height:55mm!important;gap:1.5mm!important;padding-top:1mm!important}
-      .stack{height:46mm!important}
-      .bar-label{font-size:7.2px!important;height:10mm!important;color:#475569!important}
-      .line-card{height:auto!important;min-height:58mm!important}
-      .line-svg{height:42mm!important}
-      .donut-wrap{min-height:42mm!important}
-      #studentDonut{width:36mm!important;height:36mm!important}
-      #studentDonut:after{width:22mm!important;height:22mm!important}
-
-      /* Tables */
-      .table-wrap{border:1px solid #cbd5e1!important;border-radius:7px!important;overflow:visible!important;background:#fff!important}
-      table{width:100%!important;min-width:0!important;border-collapse:collapse!important;font-size:8.8px!important;line-height:1.25!important;table-layout:auto!important}
-      th{background:#f1f5f9!important;color:#334155!important;font-size:7.8px!important;font-weight:900!important;padding:2.2mm 2mm!important;border:1px solid #cbd5e1!important;text-transform:uppercase!important;letter-spacing:.02em!important;white-space:normal!important}
-      td{padding:2mm!important;border:1px solid #e2e8f0!important;white-space:normal!important;color:#0f172a!important;vertical-align:middle!important}
-      tfoot td{background:#eaf2ff!important;font-weight:900!important;border-top:2px solid #93c5fd!important}
-      .progress{height:4px!important;min-width:20mm!important;background:#e2e8f0!important}
-      .pill{font-size:8px!important;padding:2px 5px!important}
-      input,select{border:0!important;background:transparent!important;padding:0!important;font-size:9px!important;max-width:none!important}
-
-      /* Financial P&L print */
-      #financials .pnl-bar-wrap{height:48mm!important;overflow:visible!important;border-bottom:1px solid #cbd5e1!important;gap:1.5mm!important}
-      #financials .pnl-grade-grp .pnl-bars{height:40mm!important}
-      #financials .pnl-bar-lbl{font-size:7px!important;margin-top:1mm!important}
-      .other-ie-grid{display:grid!important;grid-template-columns:1fr 1px 1fr!important;gap:4mm!important}
-      .other-divider{display:block!important;background:#cbd5e1!important;min-height:30mm!important;width:1px!important}
-      .finance-list-row{padding:1.7mm 0!important;border-bottom:1px solid #e2e8f0!important;break-inside:avoid!important}
-      .finance-list-row .name{font-size:9px!important;font-weight:800!important}
-      .finance-list-row .meta{font-size:7.8px!important;margin-top:.5mm!important;color:#64748b!important}
-      .finance-list-row .amt{font-size:9px!important;font-weight:900!important}
-
-      /* Page flow */
-      #dashboard .grid.two,#financials .grid.two{break-inside:avoid!important;page-break-inside:avoid!important}
-      #dashboard .card:nth-last-child(1),#financials .card:nth-last-child(1){break-before:auto!important}
-      #admissions .table-wrap,#settings .table-wrap,#reports .table-wrap,#cashflow .table-wrap,#scenarios .table-wrap,#financials .table-wrap{break-inside:auto!important;page-break-inside:auto!important}
-      tr{break-inside:avoid!important;page-break-inside:avoid!important}
-      .modal-overlay{display:none!important}
+      .view.print-target{display:block!important;margin:13mm 0 10mm!important;width:100%!important}
+      .card{break-inside:avoid!important;page-break-inside:avoid!important;background:#fff!important;border:1px solid #cbd5e1!important;border-radius:8px!important;padding:10px!important;margin:0 0 7px!important;box-shadow:none!important}
+      .card-title{margin-bottom:7px!important;gap:8px!important}.card-title h3{font-size:11pt!important;line-height:1.2!important;margin:0!important}.card-title p{font-size:8.5pt!important;line-height:1.25!important;margin:3px 0 0!important;color:#475569!important}.label{font-size:8pt!important;letter-spacing:.02em!important}.value{font-size:17pt!important;line-height:1.05!important;margin:4px 0!important}.sub,.caption{font-size:8.2pt!important;line-height:1.25!important}.badge{font-size:7.8pt!important;padding:3px 6px!important;border:1px solid #bfdbfe!important}
+      .grid{gap:7px!important}.kpis,.pnl-kpis{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:7px!important;margin-bottom:7px!important}.three{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:7px!important}.two{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important}
+      .kpi{min-height:52px!important;padding:8px!important}.kpi:after{display:none!important}.spark{height:4px!important;margin-top:6px!important}
+      /* Dashboard print order */
+      #dashboard.print-target{display:flex!important;flex-direction:column!important;gap:0!important}
+      #dashboard.print-target .hero{order:1!important;margin-bottom:7px!important;background:linear-gradient(135deg,#0f172a,#1e293b)!important;color:#fff!important;border-color:#0f172a!important}
+      #dashboard.print-target>.kpis{order:2!important}
+      #dashboard.print-target>.compact-target{order:3!important}
+      #dashboard.print-target>.compact-target + .grid.two{order:4!important;display:flex!important;flex-direction:column!important;gap:7px!important}
+      #dashboard.print-target>.compact-target + .grid.two>.card:nth-child(2){order:1!important}
+      #dashboard.print-target>.compact-target + .grid.two>.card:nth-child(1){order:2!important}
+      #dashboard.print-target>.compact-target + .grid.two + .grid.two{order:5!important;display:grid!important;grid-template-columns:1fr 1fr!important}
+      #dashboard.print-target>.card:last-child{order:6!important}
+      #dashboard.print-target .hero-grid{display:grid!important;grid-template-columns:1.45fr .75fr!important;gap:10px!important;align-items:center!important}
+      #dashboard.print-target .hero .card-title{margin-bottom:4px!important}#dashboard.print-target .hero-num{font-size:26pt!important;margin:4px 0!important;letter-spacing:-.04em!important}#dashboard.print-target .hero p{font-size:8.5pt!important;line-height:1.25!important;margin:4px 0!important;color:#dbeafe!important}
+      #dashboard.print-target .hero-boxes{display:grid!important;grid-template-columns:repeat(2,1fr)!important;gap:5px!important;margin-top:7px!important;max-width:92%!important}#dashboard.print-target .hero-box{padding:6px 7px!important;border-radius:6px!important;background:rgba(255,255,255,.1)!important;border:1px solid rgba(255,255,255,.18)!important}#dashboard.print-target .hero-box:nth-child(3){grid-column:1/3!important;max-width:50%!important}#dashboard.print-target .hero-box b{font-size:12pt!important}#dashboard.print-target .hero-box span{font-size:7.6pt!important}
+      #dashboard.print-target .donut-wrap{min-height:118px!important}#dashboard.print-target .donut{width:118px!important;height:118px!important}#dashboard.print-target .donut:after{width:72px!important;height:72px!important}#dashboard.print-target .donut-inner b{font-size:14pt!important}#dashboard.print-target .donut-inner span{font-size:7.5pt!important}.legend{font-size:8pt!important;margin-top:5px!important}
+      .compact-target{display:grid!important;grid-template-columns:175px 1fr 140px!important;min-height:auto!important;padding:9px 11px!important;gap:10px!important}.compact-target .big{font-size:20pt!important}.expand-arrow-col,.ct-tip{display:none!important}
+      #dashboard.print-target>.compact-target + .grid.two>.card:nth-child(2) .finance-list-row,#priorityList>div{padding:5px 0!important}.bars{height:135px!important;gap:4px!important;overflow:visible!important}.stack{height:112px!important}.bar-label{font-size:6.8pt!important;height:20px!important}.line-card{height:auto!important}.line-svg{height:105px!important}.donut-wrap{min-height:112px!important}.donut{width:112px!important;height:112px!important}.donut:after{width:68px!important;height:68px!important}.donut-inner b{font-size:13pt!important}.cash-bars{height:135px!important;overflow:visible!important}.cash-bar{margin-bottom:4px!important}.cash-month span{font-size:7pt!important}
+      .table-wrap{border-radius:4px!important;overflow:visible!important;border:1px solid #94a3b8!important}table{min-width:0!important;width:100%!important;border-collapse:collapse!important;font-size:7.8pt!important}th,td{padding:4px 5px!important;border:1px solid #e2e8f0!important;white-space:normal!important;line-height:1.16!important}th{background:#eaf1fb!important;color:#0f172a!important;font-weight:900!important;font-size:7.4pt!important}tfoot td{background:#f1f5f9!important;font-weight:900!important}.progress{height:5px!important;min-width:60px!important}
+      /* Executive reports */
+      #reports.print-target>.grid.three{display:grid!important;grid-template-columns:repeat(3,1fr)!important;margin-bottom:7px!important}#reports.print-target .card.kpi{min-height:58px!important}#reports.print-target .table-wrap{margin-top:0!important}
+      /* Financial P&L */
+      #financials.print-target>.grid.pnl-kpis{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:7px!important;margin-bottom:7px!important}#financials.print-target .pnl-kpis .card{min-height:58px!important}#financials.print-target>.grid.two{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;margin-bottom:7px!important}.pnl-bar-wrap{height:118px!important;overflow:visible!important}.pnl-grade-grp .pnl-bars{height:92px!important}.pnl-bar-lbl{font-size:6.6pt!important}.pnl-split,.other-ie-grid{display:grid!important;grid-template-columns:1fr 1px 1fr!important;gap:9px!important}.pnl-split:before{display:none!important}.other-divider{display:block!important;background:#cbd5e1!important;min-height:100px!important}.finance-list-row{padding:4px 0!important}.finance-list-row .name,.finance-list-row .amt{font-size:8pt!important}.finance-list-row .meta{font-size:7pt!important}
+      body.rtl .card-title,body.rtl .title,body.rtl table,body.rtl th,body.rtl td,body.rtl .sub,body.rtl .caption{text-align:right!important}body.rtl .target-chip{text-align:left!important}
     }
 
     /* ── Responsive ── */
-    @media(max-width:1100px){.app{grid-template-columns:1fr!important}.app.collapsed{grid-template-columns:1fr!important}aside{height:auto;position:relative}.sidebar-edge-toggle{display:none!important}.kpis,.two,.three,.hero-grid,.form-grid,.pnl-kpis{grid-template-columns:1fr!important}.top{flex-direction:column;align-items:flex-start}.content-area{padding:18px}.compact-target{grid-template-columns:1fr;min-height:auto;padding:20px}.target-chip{text-align:left}.other-ie-grid{grid-template-columns:1fr}.other-divider{display:none}.pnl-bar-wrap{overflow-x:auto;padding-bottom:8px}.pnl-grade-grp{min-width:34px}}
-    @media(max-width:640px){.top{padding:10px 14px}.content-area{padding:14px}.card{padding:16px;border-radius:18px}.hero-num{font-size:34px}.value{font-size:25px}.hero-boxes{grid-template-columns:1fr}.actions{width:100%;overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}.btn{font-size:12px;padding:8px 11px}.bars{height:220px}.stack{height:180px}table{font-size:12px}.modal-overlay{padding:12px}.modal-summary-bar{grid-template-columns:1fr}.grade-ach-row{grid-template-columns:48px 1fr 48px 68px;gap:8px}.donut{width:150px;height:150px}.donut:after{width:92px;height:92px}}
-  </style>
+    @media(max-width:1100px){.app{grid-template-columns:1fr}.app.collapsed{grid-template-columns:1fr}aside{height:auto;position:relative}.sidebar-edge-toggle{display:none}.kpis,.two,.three,.hero-grid,.form-grid,.pnl-kpis,.pnl-split{grid-template-columns:1fr!important}.pnl-split:before{display:none}.top{flex-direction:column;align-items:flex-start}.actions{width:100%;overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}.btn{flex:0 0 auto}.content-area{padding:16px}.card{padding:18px}.hero-num{font-size:36px}.compact-target{grid-template-columns:1fr!important;gap:10px}.bars,.cash-bars{overflow-x:auto}.bar-group,.cash-month{min-width:34px}}
+  
+
+    /* ── FINAL PRINT & P&L POLISH OVERRIDES ── */
+    /* Keep the Revenue vs Expenses chart comfortably below its title in normal screen view */
+    #financials .pnl-bar-wrap{margin-top:26px;padding-top:18px;height:205px;align-items:flex-end}
+    #financials .pnl-grade-grp .pnl-bars{height:168px}
+
+    @media print{
+      /* Dashboard KPI cards: force one clean row in print */
+      #dashboard.print-target > .grid.kpis{
+        display:grid!important;
+        grid-template-columns:repeat(4,minmax(0,1fr))!important;
+        gap:6px!important;
+        width:100%!important;
+        page-break-inside:avoid!important;
+        break-inside:avoid!important;
+      }
+      #dashboard.print-target > .grid.kpis > .card.kpi{
+        display:block!important;
+        min-height:54px!important;
+        padding:6px 7px!important;
+        border-radius:7px!important;
+        overflow:hidden!important;
+        page-break-inside:avoid!important;
+        break-inside:avoid!important;
+      }
+      #dashboard.print-target > .grid.kpis .label{
+        font-size:6.7pt!important;
+        line-height:1.1!important;
+        letter-spacing:.02em!important;
+        white-space:normal!important;
+      }
+      #dashboard.print-target > .grid.kpis .value{
+        font-size:15.5pt!important;
+        line-height:1!important;
+        margin:2px 0 2px!important;
+        letter-spacing:-.03em!important;
+      }
+      #dashboard.print-target > .grid.kpis .sub{
+        font-size:6.8pt!important;
+        line-height:1.15!important;
+        white-space:normal!important;
+      }
+      #dashboard.print-target > .grid.kpis .spark{height:3px!important;margin-top:4px!important}
+      /* If the printer engine is too narrow, keep 2x2 rather than one card per line */
+      @supports not (grid-template-columns: repeat(4, minmax(0, 1fr))){
+        #dashboard.print-target > .grid.kpis{grid-template-columns:repeat(2,1fr)!important}
+      }
+
+      /* Actual Enrollment row stays below KPI cards as a full-width compact block */
+      #dashboard.print-target > .compact-target{
+        display:grid!important;
+        grid-template-columns:1.1fr 1.5fr .9fr 26px!important;
+        width:100%!important;
+        min-height:58px!important;
+        padding:7px 9px!important;
+        margin-bottom:7px!important;
+        page-break-inside:avoid!important;
+        break-inside:avoid!important;
+      }
+      #dashboard.print-target > .compact-target .big{font-size:18pt!important}
+      #dashboard.print-target > .compact-target .caption{font-size:7pt!important;line-height:1.15!important}
+      #dashboard.print-target > .compact-target .target-line{height:8px!important}
+      #dashboard.print-target > .compact-target .expand-arrow-col,.ct-tip{display:none!important}
+
+      /* Financial P&L: keep KPI cards compact in one row and move chart away from title */
+      #financials.print-target > .grid.pnl-kpis{
+        display:grid!important;
+        grid-template-columns:repeat(4,minmax(0,1fr))!important;
+        gap:6px!important;
+        width:100%!important;
+      }
+      #financials.print-target > .grid.pnl-kpis > .card.kpi{
+        min-height:54px!important;
+        padding:6px 7px!important;
+        border-radius:7px!important;
+        overflow:hidden!important;
+      }
+      #financials.print-target > .grid.pnl-kpis .label{font-size:6.7pt!important;line-height:1.1!important}
+      #financials.print-target > .grid.pnl-kpis .value{font-size:15pt!important;line-height:1!important;margin:2px 0!important}
+      #financials.print-target > .grid.pnl-kpis .sub{font-size:6.8pt!important;line-height:1.15!important}
+
+      #financials.print-target .pnl-bar-wrap{
+        margin-top:16px!important;
+        padding-top:12px!important;
+        height:132px!important;
+        align-items:flex-end!important;
+        overflow:visible!important;
+      }
+      #financials.print-target .pnl-grade-grp .pnl-bars{height:96px!important}
+      #financials.print-target .card-title{margin-bottom:10px!important}
+    }
+</style>
 </head>
 <body>
 <div class="app" id="appRoot">
@@ -368,6 +412,7 @@
         <button class="btn primary" onclick="loadSheetData(true)">🔄 Refresh Sheet Data</button>
         <button class="btn" onclick="exportExcelAll()">📊 Export Excel</button>
         <button class="btn" onclick="printCurrent()">🖨️ Print / PDF</button>
+        <button class="btn lang-btn" id="langBtn" onclick="toggleLanguage()">🌐 عربي</button>
       </div>
     </div>
 
@@ -496,10 +541,10 @@
     <!-- ════════ NEW: FINANCIAL P&L ════════ -->
     <section id="financials" class="view">
       <div class="grid pnl-kpis">
-        <div class="card kpi pnl-rev"><div class="label">💰 Total Revenue (EGP)</div><div class="value" id="pnlRev">—</div><div class="sub" id="pnlRevSub">Tuition + other income</div></div>
-        <div class="card kpi pnl-exp"><div class="label">📤 Total Expenses (EGP)</div><div class="value" id="pnlExp">—</div><div class="sub" id="pnlExpSub">From Expenses sheet</div></div>
-        <div class="card kpi pnl-net"><div class="label">✅ Operating Profit</div><div class="value" id="pnlNet">—</div><div class="sub" id="pnlNetSub">Before other income & expenses</div></div>
-        <div class="card kpi pnl-mar"><div class="label">📊 Net Profit</div><div class="value" id="pnlMar">—</div><div class="sub" id="pnlMarSub">After other income & expenses</div><div class="spark"><span id="pnlMarSpark" style="width:0%"></span></div></div>
+        <div class="card kpi pnl-rev"><div class="label">💰 Net Tuition Revenue</div><div class="value" id="pnlRev">—</div><div class="sub" id="pnlRevSub">Core operating revenue</div></div>
+        <div class="card kpi pnl-exp"><div class="label">📤 Operating Expenses</div><div class="value" id="pnlExp">—</div><div class="sub" id="pnlExpSub">From Expenses sheet</div></div>
+        <div class="card kpi pnl-net"><div class="label">✅ Operating Profit</div><div class="value" id="pnlNet">—</div><div class="sub" id="pnlNetSub">Before other income / expenses</div></div>
+        <div class="card kpi pnl-mar"><div class="label">📊 Net Profit</div><div class="value" id="pnlMar">—</div><div class="sub">Margin shown after other items</div><div class="spark"><span id="pnlMarSpark" style="width:0%"></span></div></div>
       </div>
 
       <div class="grid two" style="margin-bottom:16px">
@@ -516,11 +561,14 @@
       <div class="grid two" style="margin-bottom:16px">
         <div class="card">
           <div class="card-title"><div><h3>Mini Income Statement</h3><p>A compact P&amp;L view for the school.</p></div><span class="badge" id="pnlGsheetBadge">Google Sheet</span></div>
-          <div class="table-wrap"><table style="min-width:520px"><thead><tr><th>Line Item</th><th>Amount</th><th>% of Revenue</th></tr></thead><tbody id="incomeStatementRows"></tbody></table></div>
+          <div class="table-wrap"><table style="min-width:520px"><thead><tr><th>Line Item</th><th>Amount</th><th>% of Net Tuition Revenue</th></tr></thead><tbody id="incomeStatementRows"></tbody></table></div>
         </div>
         <div class="card">
-          <div class="card-title"><div><h3>Other Income & Expenses Breakdown</h3><p>Loaded from Other_Income and Other_Expenses sheets.</p></div></div>
-          <div class="other-ie-grid"><div><div class="label" style="color:var(--green);margin-bottom:8px">Other Income</div><div id="otherIncomeList" style="font-size:13px"></div></div><div class="other-divider"></div><div><div class="label" style="color:var(--red);margin-bottom:8px">Other Expenses</div><div id="otherExpenseList" style="font-size:13px"></div></div></div>
+          <div class="card-title"><div><h3>Other Income &amp; Expenses Breakdown</h3><p>Loaded from Other_Income and Other_Expenses sheets.</p></div></div>
+          <div class="pnl-split">
+            <div class="pnl-split-col"><div class="label" style="margin-bottom:8px;color:var(--green)">Other Income</div><div id="otherIncomeList" style="font-size:13px"></div></div>
+            <div class="pnl-split-col"><div class="label" style="margin-bottom:8px;color:var(--red)">Other Expenses</div><div id="otherExpenseList" style="font-size:13px"></div></div>
+          </div>
         </div>
       </div>
 
@@ -529,7 +577,7 @@
           <div><h3>Grade-Level Profitability</h3><p>Tuition revenue plus allocated other income versus allocated expenses.</p></div>
           <span class="badge green" id="pnlDataBadge">Live P&amp;L</span>
         </div>
-        <div class="table-wrap"><table><thead><tr><th>Grade</th><th>Total Revenue</th><th>Allocated Expenses</th><th>Contribution</th><th>Margin %</th><th>Students</th><th>Revenue / Student</th></tr></thead><tbody id="pnlGradeRows"></tbody><tfoot id="pnlGradeFoot"></tfoot></table></div>
+        <div class="table-wrap"><table><thead><tr><th>Grade</th><th>Total Revenue</th><th>Allocated Expenses</th><th>Net Profit</th><th>Margin %</th><th>Students</th><th>Revenue / Student</th></tr></thead><tbody id="pnlGradeRows"></tbody><tfoot id="pnlGradeFoot"></tfoot></table></div>
       </div>
     </section>
 
@@ -562,6 +610,7 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
 <div class="author-signature">Designed by <b>Moatasem Sheha</b></div>
 
 <script>
@@ -578,7 +627,7 @@
     otherIncome:   '1471102801',
     otherExpenses: '663825289'
   };
-  const STORAGE_KEY = 'sama_winchester_v5_cache';
+  const STORAGE_KEY = 'sama_winchester_v2_cache';
   const grades = ['Pre-K','KG1','KG2','G1','G2','G3','G4','G5','G6','G7','G8','G9','G10','G11','G12'];
   let months = ['Jun 2026','Aug 2026','Oct 2026','Dec 2026'];
   let collectionPlans = {'Google Sheet Plan':[.40,.20,.20,.20]};
@@ -586,6 +635,7 @@
   let expenses = [];
   let otherIncome = [];
   let otherExpenses = [];
+  let currentLang = 'en';
   let isFirstRender = true;
 
   /* ── Default state ── */
@@ -725,6 +775,8 @@
     return{totalOther,categoryTotals,gradeIncome,schoolWide};
   }
 
+  /* ── Render Dashboard ── */
+
   function calcOtherExpenses(){
     const rs=rows(),t=totals(rs);
     const clean=otherExpenses.map(e=>({category:e.category||'Other Expenses',grade:normalizeGrade(e.grade),amount:num(e.amount),notes:e.notes||''})).filter(e=>e.amount>0);
@@ -742,7 +794,6 @@
     return{totalOtherExp,categoryTotals,gradeOtherExpenses,schoolWide};
   }
 
-  /* ── Render Dashboard ── */
   function renderDashboard(){
     const rs=rows(),t=totals(rs);
     countUpMoney(document.getElementById('heroRevenue'),t.confRev,1400);
@@ -849,72 +900,70 @@
   /* ── NEW: Render Financial P&L ── */
   function renderFinancials(){
     const rs=rows(),t=totals(rs);
+    const tuitionRevenue=t.confRev;
     const {totalExp,categoryTotals,gradeExpenses}=calcExpenses();
     const {totalOther,categoryTotals:incomeTotals,gradeIncome}=calcOtherIncome();
     const {totalOtherExp,categoryTotals:otherExpenseTotals,gradeOtherExpenses}=calcOtherExpenses();
-
-    const tuitionRevenue=t.confRev;
-    const operatingExpenses=totalExp;
-    const operatingProfit=tuitionRevenue-operatingExpenses;
-    const totalRevenue=tuitionRevenue+totalOther;
-    const totalExpenses=operatingExpenses+totalOtherExp;
+    const operatingProfit=tuitionRevenue-totalExp;
     const netProfit=operatingProfit+totalOther-totalOtherExp;
-    const netMargin=totalRevenue>0?netProfit/totalRevenue*100:0;
+    const netMargin=tuitionRevenue>0?netProfit/tuitionRevenue*100:0;
 
-    countUpMoney(document.getElementById('pnlRev'),totalRevenue,1200);
-    document.getElementById('pnlRevSub').textContent='Tuition '+fmtCompact(tuitionRevenue)+' · Other income '+fmtCompact(totalOther);
-    countUpMoney(document.getElementById('pnlExp'),totalExpenses,1200);
-    document.getElementById('pnlExpSub').textContent='Operating '+fmtCompact(operatingExpenses)+' · Other expenses '+fmtCompact(totalOtherExp);
+    countUpMoney(document.getElementById('pnlRev'),tuitionRevenue,1200);
+    document.getElementById('pnlRevSub').textContent='Net tuition revenue only';
+    countUpMoney(document.getElementById('pnlExp'),totalExp,1200);
+    document.getElementById('pnlExpSub').textContent=expenses.length+' operating expense rows loaded';
 
     const opEl=document.getElementById('pnlNet');
     countUpMoney(opEl,Math.abs(operatingProfit),1100);
     opEl.style.color=operatingProfit>=0?'var(--green)':'var(--red)';
-    document.getElementById('pnlNetSub').textContent=operatingProfit>=0?'Operating profit before other items':'Operating loss before other items';
+    document.getElementById('pnlNetSub').textContent=operatingProfit>=0?'Before other income / expenses':'Operating loss before other items';
 
-    const netEl=document.getElementById('pnlMar');
-    countUpMoney(netEl,Math.abs(netProfit),1100);
-    netEl.style.color=netProfit>=0?'var(--green)':'var(--red)';
-    const pnlMarSub=document.getElementById('pnlMarSub');
-    if(pnlMarSub)pnlMarSub.textContent='Net margin '+Math.round(netMargin)+'% after other items';
+    const npEl=document.getElementById('pnlMar');
+    countUpMoney(npEl,Math.abs(netProfit),1100);
+    npEl.style.color=netProfit>=0?'var(--green)':'var(--red)';
+    document.getElementById('pnlMar').nextElementSibling.textContent='Net margin: '+Math.round(netMargin)+'%';
     document.getElementById('pnlMarSpark').style.width=Math.min(100,Math.max(0,netMargin))+'%';
 
+    const base=tuitionRevenue||1;
     const catEntries=Object.entries(categoryTotals).sort((a,b)=>b[1]-a[1]);
     document.getElementById('expCategoryList').innerHTML=catEntries.length?catEntries.map(([cat,amt])=>{
-      const p=totalRevenue>0?amt/totalRevenue*100:0;
-      return '<div class="finance-list-row"><div><div class="name">'+cat+'</div><div style="height:5px;background:#e2e8f0;border-radius:3px;width:180px;margin-top:5px;overflow:hidden"><div style="height:5px;background:var(--red);border-radius:3px;width:'+Math.min(100,p)+'%"></div></div></div><div class="amt amt-expense">'+fmtCompact(amt)+'<div class="meta">'+p.toFixed(1)+'% of rev</div></div></div>';
+      const p=amt/base*100;
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f1f5f9"><div><div style="font-size:13px;font-weight:600">'+cat+'</div><div style="height:5px;background:#e2e8f0;border-radius:3px;width:180px;margin-top:5px;overflow:hidden"><div style="height:5px;background:var(--red);border-radius:3px;width:'+Math.min(100,p)+'%"></div></div></div><div style="text-align:right"><div class="money-red" style="font-size:13px;font-weight:800">'+fmtCompact(amt)+'</div><div style="font-size:11px;color:var(--muted)">'+p.toFixed(1)+'% of net tuition</div></div></div>';
     }).join(''):'<div class="sub">No expense rows loaded yet.</div>';
 
     const incomeEntries=Object.entries(incomeTotals).sort((a,b)=>b[1]-a[1]);
     document.getElementById('otherIncomeList').innerHTML=incomeEntries.length?incomeEntries.map(([cat,amt])=>{
-      const p=totalRevenue>0?amt/totalRevenue*100:0;
-      return '<div class="finance-list-row"><div><div class="name">'+cat+'</div><div class="meta">'+p.toFixed(1)+'% of revenue</div></div><div class="amt amt-income">'+fmtCompact(amt)+'</div></div>';
+      const p=amt/base*100;
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f1f5f9"><div><b>'+cat+'</b></div><div style="text-align:right"><b class="money-green">'+fmtCompact(amt)+'</b><div style="font-size:11px;color:var(--muted)">'+p.toFixed(1)+'% of net tuition</div></div></div>';
     }).join(''):'<div class="sub">No other income rows loaded.</div>';
 
-    const otherExpenseEntries=Object.entries(otherExpenseTotals).sort((a,b)=>b[1]-a[1]);
+    const otherExpEntries=Object.entries(otherExpenseTotals).sort((a,b)=>b[1]-a[1]);
     const otherExpEl=document.getElementById('otherExpenseList');
     if(otherExpEl){
-      otherExpEl.innerHTML=otherExpenseEntries.length?otherExpenseEntries.map(([cat,amt])=>{
-        const p=totalRevenue>0?amt/totalRevenue*100:0;
-        return '<div class="finance-list-row"><div><div class="name">'+cat+'</div><div class="meta">'+p.toFixed(1)+'% of revenue</div></div><div class="amt amt-expense">'+fmtCompact(amt)+'</div></div>';
+      otherExpEl.innerHTML=otherExpEntries.length?otherExpEntries.map(([cat,amt])=>{
+        const p=amt/base*100;
+        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f1f5f9"><div><b>'+cat+'</b></div><div style="text-align:right"><b class="money-red">'+fmtCompact(amt)+'</b><div style="font-size:11px;color:var(--muted)">'+p.toFixed(1)+'% of net tuition</div></div></div>';
       }).join(''):'<div class="sub">No other expense rows loaded.</div>';
     }
 
     const lines=[
       ['Net Tuition Revenue',tuitionRevenue,''],
-      ['Operating Expenses',-operatingExpenses,''],
-      ['Operating Profit / Loss',operatingProfit,'bold'],
+      ['Operating Expenses',-totalExp,''],
+      ['Operating Profit / (Loss)',operatingProfit,'bold'],
       ['Other Income',totalOther,''],
       ['Other Expenses',-totalOtherExp,''],
-      ['Net Profit / Loss',netProfit,'bold']
+      ['Net Profit / (Loss)',netProfit,'bold']
     ];
     document.getElementById('incomeStatementRows').innerHTML=lines.map(([name,val,cls])=>{
-      const color=val<0?'var(--red)':(name.includes('Profit')?(val>=0?'var(--green)':'var(--red)'):'var(--dark)');
-      return '<tr style="font-weight:'+(cls==='bold'?900:500)+'"><td>'+name+'</td><td style="color:'+color+'">'+(val<0?'('+fmtMoney(Math.abs(val))+')':fmtMoney(Math.abs(val)))+'</td><td>'+Math.round(totalRevenue?val/totalRevenue*100:0)+'%</td></tr>';
+      const isProfit=name.includes('Profit');
+      const color=val<0?'var(--red)':(isProfit?(val>=0?'var(--green)':'var(--red)'):'var(--dark)');
+      const shown=val<0?'('+fmtMoney(Math.abs(val))+')':fmtMoney(val);
+      return '<tr style="font-weight:'+(cls==='bold'?900:500)+'"><td>'+name+'</td><td style="color:'+color+'">'+shown+'</td><td>'+Math.round(base?val/base*100:0)+'%</td></tr>';
     }).join('');
 
-    const maxVal=Math.max(...rs.map(r=>Math.max(r.confRev+(gradeIncome[r.g]||0),(gradeExpenses[r.g]||0)+(gradeOtherExpenses[r.g]||0))),1);
+    const maxVal=Math.max(...rs.map(r=>Math.max(r.confRev+(gradeIncome[r.g]||0),gradeExpenses[r.g]||0)),1);
     document.getElementById('pnlBars').innerHTML=rs.map(r=>{
-      const exp=(gradeExpenses[r.g]||0)+(gradeOtherExpenses[r.g]||0),rev=r.confRev+(gradeIncome[r.g]||0);
+      const exp=gradeExpenses[r.g]||0,rev=r.confRev+(gradeIncome[r.g]||0);
       const rh=Math.max(2,rev/maxVal*155),eh=Math.max(2,exp/maxVal*155);
       return '<div class="pnl-grade-grp"><div class="pnl-bars"><div class="pnl-bar-r" title="'+r.g+' Revenue: '+fmtMoney(rev)+'" style="height:'+rh+'px"></div><div class="pnl-bar-e" title="'+r.g+' Expenses: '+fmtMoney(exp)+'" style="height:'+eh+'px"></div></div><div class="pnl-bar-lbl">'+r.g+'</div></div>';
     }).join('');
@@ -928,6 +977,7 @@
     }).join('');
     const tContrib=totalGradeRevenue-totalAllocExp;
     document.getElementById('pnlGradeFoot').innerHTML='<tr><td>Total</td><td>'+fmtMoney(totalGradeRevenue)+'</td><td>'+fmtMoney(totalAllocExp)+'</td><td>'+fmtMoney(Math.abs(tContrib))+'</td><td>'+Math.round(totalGradeRevenue?tContrib/totalGradeRevenue*100:0)+'%</td><td>'+t.confirmed+'</td><td>'+fmtMoney(t.confirmed?totalGradeRevenue/t.confirmed:0)+'</td></tr>';
+    applyLanguage();
   }
 
   /* ── NEW: Target Achievement Modal ── */
@@ -960,6 +1010,7 @@
     const rs=rows(),t=totals(rs),cash=cashflow(),cashTot=cash.reduce((a,b)=>a+b,0)||1;
     const {totalExp,categoryTotals,gradeExpenses}=calcExpenses();
     const {totalOther,categoryTotals:incomeTotals,gradeIncome}=calcOtherIncome();
+    const {totalOtherExp,categoryTotals:otherExpenseTotals,gradeOtherExpenses}=calcOtherExpenses();
 
     const sh1=sheet('Dashboard Summary',
       ['Grade','Ret. Confirmed','New Confirmed','Total','Pending','Net Revenue (EGP)','Gross Revenue (EGP)','Discount (EGP)','Target','Achievement %','Classes','Total Seats','Open Seats'],
@@ -974,28 +1025,32 @@
       cash.map((v,i)=>[months[i],Math.round(v),pct(v,cashTot)])
     );
     const sh4=sheet('Financial P&L by Grade',
-      ['Grade','Total Revenue (EGP)','Allocated Expenses (EGP)','Net Contribution (EGP)','Margin %','Students','Rev per Student'],
-      rs.map(r=>{const exp=gradeExpenses[r.g]||0,rev=r.confRev+(gradeIncome[r.g]||0),c=rev-exp;return[r.g,Math.round(rev),Math.round(exp),Math.round(c),Math.round(rev?c/rev*100:0),r.confirmed,Math.round(r.confirmed?rev/r.confirmed:0)]})
+      ['Grade','Total Revenue (EGP)','Allocated Expenses (EGP)','Net Profit (EGP)','Margin %','Students','Rev per Student'],
+      rs.map(r=>{const exp=(gradeExpenses[r.g]||0)+(gradeOtherExpenses[r.g]||0),rev=r.confRev+(gradeIncome[r.g]||0),c=rev-exp;return[r.g,Math.round(rev),Math.round(exp),Math.round(c),Math.round(rev?c/rev*100:0),r.confirmed,Math.round(r.confirmed?rev/r.confirmed:0)]})
     );
     const sh5=sheet('Expense Categories',
-      ['Category','Total Amount (EGP)','% of Total Revenue'],
-      Object.entries(categoryTotals).map(([k,v])=>[k,Math.round(v),Math.round((t.confRev+totalOther)?v/(t.confRev+totalOther)*100:0)])
+      ['Category','Total Amount (EGP)','% of Net Tuition Revenue'],
+      Object.entries(categoryTotals).map(([k,v])=>[k,Math.round(v),Math.round(t.confRev?v/t.confRev*100:0)])
     );
     const sh6=sheet('Other Income Categories',
-      ['Category','Total Amount (EGP)','% of Total Revenue'],
-      Object.entries(incomeTotals).map(([k,v])=>[k,Math.round(v),Math.round((t.confRev+totalOther)?v/(t.confRev+totalOther)*100:0)])
+      ['Category','Total Amount (EGP)','% of Net Tuition Revenue'],
+      Object.entries(incomeTotals).map(([k,v])=>[k,Math.round(v),Math.round(t.confRev?v/t.confRev*100:0)])
+    );
+    const sh7=sheet('Other Expense Categories',
+      ['Category','Total Amount (EGP)','% of Net Tuition Revenue'],
+      Object.entries(otherExpenseTotals||{}).map(([k,v])=>[k,Math.round(v),Math.round(t.confRev?v/t.confRev*100:0)])
     );
 
     const xml=`<?xml version="1.0"?><?mso-application progid="Excel.Sheet"?>
 <Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
   <Styles><Style ss:ID="H"><Font ss:Bold="1"/><Interior ss:Color="#DBEAFE" ss:Pattern="Solid"/></Style></Styles>
-  ${sh1}${sh2}${sh3}${sh4}${sh5}${sh6}
+  ${sh1}${sh2}${sh3}${sh4}${sh5}${sh6}${sh7}
 </Workbook>`;
 
     const blob=new Blob([xml],{type:'application/vnd.ms-excel'});
     const url=URL.createObjectURL(blob);
     const a=document.createElement('a');a.href=url;a.download='SAMA_Winchester_Report_'+new Date().toISOString().slice(0,10)+'.xls';a.click();
-    URL.revokeObjectURL(url);toast('Full report exported — 6 sheets');
+    URL.revokeObjectURL(url);toast('Full report exported — 7 sheets');
   }
 
   /* ── NEW: Print current view ── */
@@ -1004,10 +1059,9 @@
     const cur=document.querySelector('.view.active');
     if(cur)cur.classList.add('print-target');
     const titleEl=document.getElementById('pageTitle');
-    const subEl=document.getElementById('pageSubtitle');
-    document.body.setAttribute('data-print-title', titleEl ? titleEl.textContent : 'Dashboard');
-    if(cur)cur.setAttribute('data-print-subtitle', subEl ? subEl.textContent : 'Executive report');
-    setTimeout(()=>window.print(),50);
+    document.body.setAttribute('data-print-title', titleEl ? titleEl.textContent.trim() : 'Executive Report');
+    document.body.setAttribute('data-print-date', new Date().toLocaleDateString());
+    window.print();
   }
 
   /* ── Render All ── */
@@ -1018,6 +1072,7 @@
     renderCashflow();
     renderScenarios();
     renderFinancials();
+    applyLanguage();
   }
 
   /* ── NEW: Sidebar toggle (professional) ── */
@@ -1033,7 +1088,7 @@
     reports:['Executive Reports','Detailed density, utilization and operational decision signals.'],
     cashflow:['Cash Flow Forecast','Monthly expected collections based on Payment_Plan sheet.'],
     scenarios:['What-If Analysis','Temporary scenario testing without changing official data.'],
-    financials:['Financial P&L','Operating profit, other income/expenses, net profit and margin by grade.']
+    financials:['Financial P&L','Operating profit, other income, other expenses and net profit by grade.']
   };
   document.querySelectorAll('.nav').forEach(btn=>btn.addEventListener('click',()=>{
     document.querySelectorAll('.nav').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
@@ -1123,14 +1178,125 @@
 
   function applyOtherExpenseData(rows){
     otherExpenses=rows.map(r=>({
-      category:getVal(r,['Category','Expense Category','Main Category','Type'])||'Other Expenses',
-      grade:getVal(r,['Grade','Class','Stage','Cost Center','Allocation'])||'School-wide',
-      amount:num(getVal(r,['Amount','Amount (EGP)','EGP','Value','Cost','Expense'])),
+      category:getVal(r,['Category','Expense Category','Type','Expense Type'])||'Other Expenses',
+      grade:getVal(r,['Grade','Class','Stage','Allocation'])||'School-wide',
+      amount:num(getVal(r,['Amount','Amount (EGP)','EGP','Value','Expense'])),
       notes:getVal(r,['Notes','Note','Description','Subcategory','Sub Category'])||''
     })).filter(e=>e.amount>0);
   }
 
   function loadLocalCache(){try{const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');if(!saved||!saved.state)return false;state=saved.state;months=saved.months||months;collectionPlans=saved.collectionPlans||collectionPlans;if(saved.expenses)expenses=saved.expenses;if(saved.otherIncome)otherIncome=saved.otherIncome;if(saved.otherExpenses)otherExpenses=saved.otherExpenses;renderAll(true);return true}catch(e){return false}}
+
+
+  /* ── Language Toggle ── */
+  const AR_MAP={
+    'Dashboard':'لوحة القيادة','Executive snapshot for admissions, revenue, capacity and class planning.':'ملخص تنفيذي للقبول والإيرادات والطاقة الاستيعابية وتخطيط الفصول.','Admissions Data':'بيانات القبول','Fees & Capacity':'المصروفات والطاقة الاستيعابية','Executive Reports':'تقارير تنفيذية','Cash Flow Forecast':'توقعات التدفقات النقدية','What-If Analysis':'تحليل السيناريوهات','Financial P&L':'قائمة الدخل المالية','Data source':'مصدر البيانات','Google Sheet is the official data source. Dashboard refreshes all calculations on sync.':'Google Sheet هو مصدر البيانات الرسمي. يتم تحديث كل الحسابات عند المزامنة.','Refresh Sheet Data':'تحديث بيانات الشيت','Export Excel':'تصدير Excel','Print / PDF':'طباعة / PDF','Next Year Revenue Outlook':'توقعات إيرادات العام القادم','Confirmed students only. Pending shown separately.':'الطلاب المؤكدون فقط، والطلاب المعلقون يظهرون بشكل منفصل.','Live from Google Sheet':'مباشر من Google Sheet','Confirmed Students':'طلاب مؤكدون','Required Classes':'الفصول المطلوبة','Available Seats':'مقاعد متاحة','Returning Revenue':'إيراد الطلاب المستمرين','Returning':'مستمرون','New':'جدد','Total Confirmed':'إجمالي المؤكدين','Net Confirmed Revenue':'صافي الإيراد المؤكد','Classes Needed':'الفصول المطلوبة','Average Discount':'متوسط الخصم','Actual Enrollment vs Target':'المسجلون فعليًا مقابل المستهدف','Actual / Target':'الفعلي / المستهدف','Enrollment by Grade':'التسجيل حسب المرحلة','Blue = returning · Yellow = new students':'الأزرق = مستمرون · الأصفر = جدد','Admission Priorities':'أولويات القبول','Grades with most open seats need marketing focus.':'المراحل ذات المقاعد الشاغرة الأكبر تحتاج تركيزًا تسويقيًا.','Expected Collections Timeline':'توقيت التحصيلات المتوقعة','Based on Payment_Plan sheet.':'بناءً على شيت Payment_Plan.','Student Mix':'توزيع الطلاب','Returning vs new confirmed students.':'الطلاب المستمرون مقابل الجدد المؤكدين.','Grade-Level CEO Summary':'ملخص تنفيذي حسب المرحلة','Students, revenue, classes and available seats by grade.':'الطلاب والإيرادات والفصول والمقاعد المتاحة حسب المرحلة.','Grade':'المرحلة','Total':'الإجمالي','Pending':'معلق','Net Revenue':'صافي الإيراد','Target':'المستهدف','Achievement':'نسبة التحقق','Classes':'الفصول','Capacity':'الطاقة','Open Seats':'مقاعد شاغرة','Utilization':'الإشغال','Net Tuition Revenue':'صافي إيرادات الدراسة','Operating Expenses':'مصروفات التشغيل','Operating Profit':'ربح التشغيل','Net Profit':'صافي الربح','Core operating revenue':'إيراد التشغيل الأساسي','Before other income / expenses':'قبل الإيرادات والمصروفات الأخرى','Revenue vs Expenses by Grade':'الإيراد مقابل المصروفات حسب المرحلة','Revenue':'الإيراد','Allocated Expenses':'المصروفات المحملة','Expense Breakdown by Category':'تحليل المصروفات حسب البند','Loaded from the Expenses sheet in Google Sheet.':'من شيت Expenses في Google Sheet.','Mini Income Statement':'قائمة دخل مختصرة','A compact P&L view for the school.':'عرض مختصر لقائمة دخل المدرسة.','Line Item':'البند','Amount':'المبلغ','% of Net Tuition Revenue':'٪ من صافي إيرادات الدراسة','Other Income & Expenses Breakdown':'تحليل الإيرادات والمصروفات الأخرى','Loaded from Other_Income and Other_Expenses sheets.':'من شيتات Other_Income و Other_Expenses.','Other Income':'إيرادات أخرى','Other Expenses':'مصروفات أخرى','Grade-Level Profitability':'ربحية كل مرحلة','Tuition revenue plus allocated other income versus allocated expenses.':'إيرادات الدراسة مضافًا إليها الإيرادات الأخرى المحملة مقابل المصروفات المحملة.','Total Revenue':'إجمالي الإيرادات','Contribution':'المساهمة','Margin %':'هامش الربح ٪','Students':'الطلاب','Revenue / Student':'الإيراد / طالب','Net Tuition Revenue only':'صافي إيرادات الدراسة فقط','No expense rows loaded yet.':'لا توجد مصروفات محملة بعد.','No other income rows loaded.':'لا توجد إيرادات أخرى محملة.','No other expense rows loaded.':'لا توجد مصروفات أخرى محملة.','Net Profit / (Loss)':'صافي الربح / (الخسارة)','Operating Profit / (Loss)':'ربح التشغيل / (الخسارة)','English':'الإنجليزية','Arabic':'العربية'};
+
+  Object.assign(AR_MAP,{
+    'Revenue vs expenses, net operating income and margin by grade.':'الإيرادات مقابل المصروفات، وصافي ربح التشغيل والهامش حسب المرحلة.',
+    'Operating profit, other income, other expenses and net profit by grade.':'ربح التشغيل والإيرادات الأخرى والمصروفات الأخرى وصافي الربح حسب المرحلة.',
+    'Net tuition revenue only':'صافي إيرادات الدراسة فقط',
+    'Core operating revenue':'إيراد التشغيل الأساسي',
+    'From Expenses sheet':'من شيت المصروفات',
+    'Margin shown after other items':'الهامش بعد البنود الأخرى',
+    'Net margin':'هامش صافي الربح',
+    'Before other income / expenses':'قبل الإيرادات والمصروفات الأخرى',
+    'Operating loss before other items':'خسارة تشغيل قبل البنود الأخرى',
+    'Profitable operations':'تشغيل مربح',
+    'Operating at a loss':'تشغيل بخسارة',
+    'Tuition':'الدراسة',
+    'Other income':'إيرادات أخرى',
+    'operating expense rows loaded':'صفوف مصروفات تشغيل محملة',
+    'expense rows loaded':'صفوف مصروفات محملة',
+    'of net tuition':'من صافي إيرادات الدراسة',
+    'Revenue vs Expenses by Grade':'الإيرادات مقابل المصروفات حسب المرحلة',
+    'Allocated Expenses':'المصروفات المحملة',
+    'Expense Breakdown by Category':'تحليل المصروفات حسب البند',
+    'Loaded from the Expenses sheet in Google Sheet.':'من شيت المصروفات في Google Sheet.',
+    'Loaded from Other_Income and Other_Expenses sheets.':'من شيت الإيرادات الأخرى والمصروفات الأخرى.',
+    'Other Income & Expenses Breakdown':'تحليل الإيرادات والمصروفات الأخرى',
+    'Grade-Level Profitability':'صافي ربح كل مرحلة',
+    'Tuition revenue plus allocated other income versus allocated expenses.':'إيرادات الدراسة مضافًا إليها الإيرادات الأخرى المحملة مقابل المصروفات المحملة.',
+    'Net Profit / Loss':'صافي الربح / الخسارة',
+    'Net Profit / (Loss)':'صافي الربح / (الخسارة)',
+    'Operating Profit / (Loss)':'ربح التشغيل / (الخسارة)',
+    'Net Profit':'صافي الربح',
+    'Total Revenue':'إجمالي الإيرادات',
+    'Total Expenses':'إجمالي المصروفات',
+    'Revenue / Student':'الإيراد لكل طالب',
+    'Net Profit (EGP)':'صافي الربح (ج.م)',
+    'Financial P&L by Grade':'قائمة الدخل حسب المرحلة',
+    'Expense Categories':'بنود المصروفات',
+    'Other Income Categories':'بنود الإيرادات الأخرى',
+    'Other Expense Categories':'بنود المصروفات الأخرى',
+    'Teacher Salaries':'رواتب المعلمين',
+    'Admin & Support Salaries':'رواتب الإدارة والدعم',
+    'Utilities & Facilities':'المرافق والخدمات',
+    'Technology & Learning':'التكنولوجيا والتعليم',
+    'Marketing & Admissions':'التسويق والقبول',
+    'Other Operating Expenses':'مصروفات تشغيل أخرى',
+    'Payroll':'المرتبات',
+    'Salaries':'الرواتب',
+    'Teacher Salary':'راتب المعلم',
+    'Teacher Salaries':'رواتب المعلمين',
+    'Electricity':'الكهرباء',
+    'Water':'المياه',
+    'Maintenance':'الصيانة',
+    'Stationery':'الأدوات المكتبية',
+    'Cleaning':'النظافة',
+    'Security':'الأمن',
+    'Software':'البرمجيات',
+    'Transportation':'النقل',
+    'Transport':'النقل',
+    'Rent':'الإيجار',
+    'Internet':'الإنترنت',
+    'Marketing':'التسويق',
+    'Bus Fees':'إيرادات الباص',
+    'Uniform':'الزي المدرسي',
+    'Activities':'الأنشطة',
+    'Activity Fees':'رسوم الأنشطة',
+    'Application Fees':'رسوم التقديم',
+    'Registration Fees':'رسوم التسجيل',
+    'Books':'الكتب',
+    'Other Income':'إيرادات أخرى',
+    'Legal Fees':'أتعاب قانونية',
+    'Bank Charges':'مصروفات بنكية',
+    'Penalties':'غرامات',
+    'One-time Repairs':'إصلاحات غير متكررة',
+    'Consulting Fees':'أتعاب استشارية',
+    'School-wide':'عام على المدرسة'
+  });
+
+  const EN_MAP=Object.fromEntries(Object.entries(AR_MAP).map(([en,ar])=>[ar,en]));
+  function translateText(text){
+    const original=String(text||'');
+    const trimmed=original.trim();
+    if(!trimmed)return text;
+    const map=currentLang==='ar'?AR_MAP:EN_MAP;
+    if(map[trimmed]!==undefined)return original.replace(trimmed,map[trimmed]);
+    let out=original;
+    Object.keys(map).sort((a,b)=>b.length-a.length).forEach(k=>{
+      if(k && out.includes(k)) out=out.split(k).join(map[k]);
+    });
+    return out;
+  }
+  function applyLanguage(){
+    const isAr=currentLang==='ar';
+    document.documentElement.lang=isAr?'ar':'en';
+    document.documentElement.dir=isAr?'rtl':'ltr';
+    document.body.classList.toggle('rtl',isAr);
+    const btn=document.getElementById('langBtn'); if(btn)btn.textContent=isAr?'🌐 EN':'🌐 عربي';
+    document.querySelectorAll('[data-tip]').forEach(el=>{if(!el.dataset.tipEn)el.dataset.tipEn=el.getAttribute('data-tip')||'';el.setAttribute('data-tip',isAr?translateText(el.dataset.tipEn):el.dataset.tipEn)});
+    document.querySelectorAll('[title]').forEach(el=>{if(!el.dataset.titleEn)el.dataset.titleEn=el.getAttribute('title')||'';el.setAttribute('title',isAr?translateText(el.dataset.titleEn):el.dataset.titleEn)});
+    const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{acceptNode(node){
+      if(!node.nodeValue.trim())return NodeFilter.FILTER_REJECT;
+      if(node.parentElement && ['SCRIPT','STYLE'].includes(node.parentElement.tagName))return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    }});
+    const nodes=[]; while(walker.nextNode())nodes.push(walker.currentNode);
+    nodes.forEach(n=>{n.nodeValue=translateText(n.nodeValue)});
+  }
+  function toggleLanguage(){currentLang=currentLang==='en'?'ar':'en';renderAll(false);applyLanguage();toast(currentLang==='ar'?'تم التحويل إلى العربية':'Language switched to English')}
 
   /* ── Init ── */
   renderAll();
